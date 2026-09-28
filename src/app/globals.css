@@ -1,0 +1,107 @@
+@import "tailwindcss";
+
+/* ───────────── Design tokens ───────────── */
+@theme {
+  --font-sans: var(--font-archivo), system-ui, Helvetica, Arial, sans-serif;
+
+  --color-ink: #111111;
+  --color-frame: #ffffff;
+  --color-panel: #e9ebed;
+  --color-ghost: #cfd2d6;
+  --color-muted: #6b7078;
+
+  --animate-drop: drop 0.9s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  --animate-rise: rise 1.4s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  --animate-up: up 0.8s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  --animate-from-left: from-left 1s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  --animate-from-right: from-right 1s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  --animate-ping-soft: ping-soft 2s 2.3s infinite;
+  --animate-fade: fade 0.45s ease both;
+  --animate-hero-zoom: hero-zoom 1.6s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  --animate-float: float 5.5s ease-in-out infinite;
+
+  @keyframes drop { from { opacity: 0; transform: translateY(-24px); } }
+  @keyframes rise { from { opacity: 0; transform: translateY(14%) scale(1.06); filter: blur(10px); } }
+  @keyframes up { from { opacity: 0; transform: translateY(18px); } }
+  @keyframes from-left { from { opacity: 0; transform: translateX(-40px); } }
+  @keyframes from-right { from { opacity: 0; transform: translateX(40px); } }
+  @keyframes ping-soft { 0% { transform: scale(1); opacity: 0.8; } 100% { transform: scale(1.8); opacity: 0; } }
+  @keyframes fade { from { opacity: 0; } }
+  @keyframes hero-zoom { 0%, 40% { transform: scale(2.4); } 100% { transform: scale(1); } }
+  @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-1cqw); } }
+}
+
+html, body { background: var(--color-frame); color: var(--color-ink); }
+
+/* ───────────── Hero notch (trapezoid behind the logo) ───────────── */
+.notch::before {
+  content: "";
+  position: absolute; top: 0; left: 50%; z-index: 30;
+  width: 30%; height: 5.2cqw;
+  translate: -50% 0;
+  background: var(--color-frame);
+  clip-path: polygon(0 0, 100% 0, 92% 100%, 8% 100%);
+  animation: notch 0.9s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+@keyframes notch { from { transform: translateY(-100%); } }
+
+/* ───────────── Hero lines draw outward ───────────── */
+.hero-lines line { stroke-dasharray: 520; stroke-dashoffset: 520; animation: draw 1.6s 2s cubic-bezier(0.6, 0, 0.2, 1) forwards; }
+.hero-lines line:nth-child(even) { animation-delay: 2.15s; }
+@keyframes draw { to { stroke-dashoffset: 0; } }
+
+/* ───────────── AnimatedHeading: hidden → striped → solid ─────────────
+   Letters are only hidden when <html> has the .js class (set before paint).
+   No JS = headings simply show. */
+.anim-heading .char {
+  --c: var(--color-ink);
+  --sc: var(--c);
+  display: inline-block;
+  color: var(--c);
+  background: repeating-linear-gradient(90deg, var(--sc) 0 1.4px, transparent 1.4px 3.2px);
+  -webkit-background-clip: text;
+  background-clip: text;
+}
+.anim-heading.on-dark .char { --c: #ffffff; }
+.anim-heading .tone-muted .char { --c: #a9adb4; }
+.anim-heading .tone-stripe .char { --sc: var(--color-ink); --c: transparent; }
+
+.js .anim-heading .char { opacity: 0; color: transparent; animation: char-failsafe 0s 8s forwards; }
+.js .anim-heading.in .char { animation: char-reveal 1s var(--d, 0s) forwards; }
+@keyframes char-reveal {
+  0% { opacity: 0; color: transparent; }
+  8% { opacity: 1; }
+  70% { opacity: 1; color: transparent; }
+  72%, 100% { opacity: 1; color: var(--c); }
+}
+
+/* Stripe-toned words (e.g. hero "WORKOUT!") backspace away, then retype, forever. */
+.js .anim-heading.in .tone-stripe {
+  display: inline-block;
+  vertical-align: bottom;
+  border-right: 0.09em solid var(--color-ink);
+  animation: typewriter 4.5s linear 3.3s infinite, caret-blink 0.7s step-end infinite;
+}
+@keyframes typewriter {
+  0%, 15% { clip-path: inset(0 0 0 0); animation-timing-function: steps(7, end); }
+  40% { clip-path: inset(0 100% 0 0); animation-timing-function: steps(1, end); }
+  55% { clip-path: inset(0 100% 0 0); animation-timing-function: steps(7, end); }
+  85%, 100% { clip-path: inset(0 0 0 0); }
+}
+@keyframes caret-blink { 50% { border-color: transparent; } }
+@keyframes char-failsafe { to { opacity: 1; color: var(--c); } }
+
+/* ───────────── RevealImage: wipe up + zoom out ───────────── */
+.reveal { transition: clip-path 1.3s cubic-bezier(0.77, 0, 0.18, 1) var(--rd, 0s); }
+.reveal .reveal-img { transition: transform 1.8s cubic-bezier(0.2, 0.8, 0.2, 1) var(--rd, 0s); }
+.js .reveal:not(.shown) { clip-path: inset(100% 0 0 0); animation: reveal-failsafe 0s 8s forwards; }
+.js .reveal:not(.shown) .reveal-img { transform: scale(1.18); }
+@keyframes reveal-failsafe { to { clip-path: inset(0); } }
+
+/* ───────────── Accessibility ───────────── */
+:focus-visible { outline: 2px solid var(--color-ink); outline-offset: 3px; }
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.01ms !important; animation-delay: 0s !important; transition-duration: 0.01ms !important; }
+  .anim-heading .char { opacity: 1 !important; color: var(--c) !important; }
+  .reveal { clip-path: none !important; }
+}
