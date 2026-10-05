@@ -108,6 +108,20 @@ drop policy if exists "admin insert products" on public.products;
 create policy "admin insert products" on public.products for insert to authenticated
   with check (exists (select 1 from public.admins a where a.user_id = auth.uid()));
 
+-- Storage bucket for product photos uploaded from the admin "Add Product" form.
+-- Public bucket: anyone can view the images (needed for next/image + the storefront),
+-- but only an admin can upload into it.
+insert into storage.buckets (id, name, public)
+values ('product-images', 'product-images', true)
+on conflict (id) do nothing;
+
+drop policy if exists "admin upload product-images" on storage.objects;
+create policy "admin upload product-images" on storage.objects for insert to authenticated
+  with check (
+    bucket_id = 'product-images'
+    and exists (select 1 from public.admins a where a.user_id = auth.uid())
+  );
+
 -- ─────────────────────────────────────────────────────────────
 -- Orders — created by the "Make Payment" checkout action.
 -- No real payment gateway: this records the order as placed.

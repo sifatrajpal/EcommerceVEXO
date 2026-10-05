@@ -2,8 +2,6 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { writeFile } from "node:fs/promises";
-import path from "node:path";
 import { createSupabaseServerClient } from "@/lib/supabase/auth-server";
 import { isCurrentUserAdmin } from "@/lib/admin";
 
@@ -29,11 +27,19 @@ export async function createProduct(_prev: CreateProductState, formData: FormDat
   if (!(imageFile instanceof File) || imageFile.size === 0) return { status: "error", message: "Choose an image file." };
   if (!imageFile.type.startsWith("image/")) return { status: "error", message: "That file isn't an image." };
 
-  const ext = path.extname(imageFile.name) || ".jpg";
-  const filename = `${crypto.randomUUID()}${ext}`;
-  const bytes = Buffer.from(await imageFile.arrayBuffer());
-  await writeFile(path.join(process.cwd(), "public", "images", filename), bytes);
-  const imageUrl = `/images/${filename}`;
+  const ext = imageFile.name.split(".").pop() || "jpg";
+  const filename = `${crypto.randomUUID()}.${ext}`;
+
+  const { error: uploadError } = await supabase.storage
+    .from("product-images")
+    .upload(filename, imageFile, { contentType: imageFile.type });
+
+  if (uploadError) {
+    console.error("[createProduct:upload]", uploadError.message);
+    return { status: "error", message: "Couldn't upload that image." };
+  }
+
+  const { data: { publicUrl } } = supabase.storage.from("product-images").getPublicUrl(filename);
 
   const { error } = await supabase.from("products").insert({
     name,
@@ -41,7 +47,7 @@ export async function createProduct(_prev: CreateProductState, formData: FormDat
     currency,
     season,
     category,
-    image_url: imageUrl,
+    image_url: publicUrl,
     is_new_arrival: isNewArrival,
   });
 
