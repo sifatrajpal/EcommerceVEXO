@@ -62,3 +62,50 @@ export const LinkIcon = (p: SVGProps<SVGSVGElement>) => (
     <path d="M16 18h.5a3.5 3.5 0 0 0 3.5-3.5v0A3.5 3.5 0 0 0 16.5 11H15" />
   </svg>
 );
+
+export const SearchIcon = (p: SVGProps<SVGSVGElement>) => (
+  <svg {...base} stroke="currentColor" {...p}><circle cx="11" cy="11" r="7" /><path d="M21 21l-4.3-4.3" /></svg>
+);
+export const BellIcon = (p: SVGProps<SVGSVGElement>) => (
+  <svg {...base} stroke="currentColor" {...p}>
+    <path d="M6 10a6 6 0 1 1 12 0c0 3.3 1 5 1.5 5.5H4.5C5 15 6 13.3 6 10z" />
+    <path d="M10 19a2 2 0 0 0 4 0" />
+  </svg>
+);
+export const GridIcon = (p: SVGProps<SVGSVGElement>) => (
+  <svg {...base} stroke="currentColor" {...p}>
+    <rect x="3" y="3" width="8" height="8" rx="2" /><rect x="13" y="3" width="8" height="8" rx="2" />
+    <rect x="3" y="13" width="8" height="8" rx="2" /><rect x="13" y="13" width="8" height="8" rx="2" />
+  </svg>
+);
+export const BoxIcon = (p: SVGProps<SVGSVGElement>) => (
+  <svg {...base} stroke="currentColor" {...p}>
+    <path d="M3 8l9-5 9 5-9 5-9-5z" /><path d="M3 8v8l9 5 9-5V8" /><path d="M12 13v8" />
+  </svg>
+);
+export const PlusIcon = (p: SVGProps<SVGSVGElement>) => (
+  <svg {...base} stroke="currentColor" {...p}><path d="M12 5v14M5 12h14" /></svg>
+);
+export const RefreshIcon = (p: SVGProps<SVGSVGElement>) => (
+  <svg {...base} stroke="currentColor" {...p}>
+    <path d="M3 12a9 9 0 0 1 15.3-6.4L21 8" /><path d="M21 3v5h-5" />
+    <path d="M21 12a9 9 0 0 1-15.3 6.4L3 16" /><path d="M3 21v-5h5" />
+  </svg>
+);
+export const LogOutIcon = (p: SVGProps<SVGSVGElement>) => (
+  <svg {...base} stroke="currentColor" {...p}>
+    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" /><path d="M16 17l5-5-5-5" /><path d="M21 12H9" />
+  </svg>
+);
+export const PanelLeftIcon = (p: SVGProps<SVGSVGElement>) => (
+  <svg {...base} stroke="currentColor" {...p}><rect x="3" y="4" width="18" height="16" rx="2" /><path d="M9 4v16" /></svg>
+);
+export const TrendingUpIcon = (p: SVGProps<SVGSVGElement>) => (
+  <svg {...base} stroke="currentColor" {...p}><path d="M3 17l6-6 4 4 8-8" /><path d="M15 7h6v6" /></svg>
+);
+export const UsersIcon = (p: SVGProps<SVGSVGElement>) => (
+  <svg {...base} stroke="currentColor" {...p}>
+    <circle cx="9" cy="8" r="3.5" /><path d="M2.5 20a6.5 6.5 0 0 1 13 0" />
+    <path d="M16 5.2a3.5 3.5 0 0 1 0 6.6" /><path d="M18.5 20a6.3 6.3 0 0 0-4-5.9" />
+  </svg>
+);

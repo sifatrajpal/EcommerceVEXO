@@ -88,3 +88,79 @@ export async function getSubscriberCount(): Promise<number> {
   const { count } = await supabase.from("subscribers").select("id", { count: "exact", head: true });
   return count ?? 0;
 }
+
+export type RevenueTrendPoint = { date: string; total: number };
+
+/** Daily revenue for the last `days` days (today included), zero-filled on days with no orders. */
+export async function getRevenueTrend(days = 30): Promise<RevenueTrendPoint[]> {
+  const supabase = await createSupabaseServerClient();
+  const since = new Date();
+  since.setDate(since.getDate() - (days - 1));
+  since.setHours(0, 0, 0, 0);
+
+  const { data } = await supabase
+    .from("orders")
+    .select("total, created_at")
+    .gte("created_at", since.toISOString())
+    .returns<{ total: number | string; created_at: string }[]>();
+
+  const byDay = new Map<string, number>();
+  for (const row of data ?? []) {
+    const day = row.created_at.slice(0, 10);
+    byDay.set(day, (byDay.get(day) ?? 0) + Number(row.total));
+  }
+
+  const points: RevenueTrendPoint[] = [];
+  for (let i = 0; i < days; i++) {
+    const d = new Date(since);
+    d.setDate(d.getDate() + i);
+    const key = d.toISOString().slice(0, 10);
+    points.push({ date: key, total: byDay.get(key) ?? 0 });
+  }
+  return points;
+}
+
+export type OrderStatusCount = { status: string; count: number };
+const ORDER_STATUSES = ["placed", "fulfilled", "cancelled"] as const;
+
+export async function getOrdersByStatus(): Promise<OrderStatusCount[]> {
+  const supabase = await createSupabaseServerClient();
+  const { data } = await supabase.from("orders").select("status").returns<{ status: string }[]>();
+
+  const counts = new Map<string, number>();
+  for (const row of data ?? []) counts.set(row.status, (counts.get(row.status) ?? 0) + 1);
+
+  return ORDER_STATUSES.map((status) => ({ status, count: counts.get(status) ?? 0 }));
+}
+
+/** Orders placed in the last `hours` hours — powers the admin header's notification badge. */
+export async function getRecentOrderCount(hours = 24): Promise<number> {
+  const supabase = await createSupabaseServerClient();
+  const since = new Date(Date.now() - hours * 60 * 60 * 1000).toISOString();
+  const { count } = await supabase.from("orders").select("id", { count: "exact", head: true }).gte("created_at", since);
+  return count ?? 0;
+}
+
+export type AllOrder = RecentOrder & { status: string };
+
+/** Full order history for the admin /admin/orders page (RLS already scopes this to an admin). */
+export async function getAllOrders(limit = 200): Promise<AllOrder[]> {
+  const supabase = await createSupabaseServerClient();
+
+  const { data } = await supabase
+    .from("orders")
+    .select("id, user_email, total, currency, status, created_at, order_items(quantity)")
+    .order("created_at", { ascending: false })
+    .limit(limit)
+    .returns<{ id: string; user_email: string; total: number | string; currency: string; status: string; created_at: string; order_items: { quantity: number }[] }[]>();
+
+  return (data ?? []).map((o) => ({
+    id: o.id,
+    userEmail: o.user_email,
+    total: Number(o.total),
+    currency: o.currency,
+    status: o.status,
+    createdAt: o.created_at,
+    itemCount: o.order_items.reduce((n, i) => n + i.quantity, 0),
+  }));
+}

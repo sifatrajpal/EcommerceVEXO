@@ -1,23 +1,21 @@
-import Link from "next/link";
+import { redirect, notFound } from "next/navigation";
 import { signOut } from "@/actions/auth";
-import { AdminNavLinks } from "@/components/organisms/AdminNavLinks";
+import { createSupabaseServerClient } from "@/lib/supabase/auth-server";
+import { isCurrentUserAdmin } from "@/lib/admin";
+import { getRecentOrderCount } from "@/lib/data/admin-stats";
+import { AdminShell } from "@/components/organisms/AdminShell";
 
-export default function AdminLayout({ children }: { children: React.ReactNode }) {
+export default async function AdminLayout({ children }: { children: React.ReactNode }) {
+  const supabase = await createSupabaseServerClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) redirect("/sign-in");
+  if (!(await isCurrentUserAdmin())) notFound();
+
+  const notifications = await getRecentOrderCount(24);
+
   return (
-    <div className="min-h-screen bg-frame">
-      <aside className="fixed inset-y-0 left-0 flex w-[300px] flex-col border-r border-[#eceef0] bg-white p-6">
-        <Link href="/" className="mb-8 px-1 text-xl font-semibold tracking-tight">VEXO</Link>
-        <AdminNavLinks />
-        <form action={signOut} className="mt-auto pt-6">
-          <button
-            type="submit"
-            className="w-full rounded-lg bg-[#141414] px-3 py-2.5 text-[14px] font-medium text-white"
-          >
-            Sign Out
-          </button>
-        </form>
-      </aside>
-      <div className="ml-[300px] p-2.5">{children}</div>
-    </div>
+    <AdminShell userEmail={user.email ?? ""} notifications={notifications} signOutAction={signOut}>
+      {children}
+    </AdminShell>
   );
 }
