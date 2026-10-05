@@ -19,7 +19,7 @@ type Props = {
   children?: ReactNode;
 };
 
-const CROSSFADE_MS = 500;
+const CROSSFADE_MS = 1000;
 
 /**
  * Pipeline: wrapper starts clipped (clip-path inset 100% from top) with the image zoomed in.
