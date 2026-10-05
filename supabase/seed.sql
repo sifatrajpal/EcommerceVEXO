@@ -26,14 +26,25 @@ insert into public.products (name, price, season, category, collection, brand, m
 
 -- Catalog reference data (admin-managed master lists).
 insert into public.categories (name, sort) values ('Men', 1), ('Women', 2), ('Unisex', 3) on conflict (name) do nothing;
-insert into public.brands (name, sort) values ('ASRV x Equinox', 1) on conflict (name) do nothing;
+
+insert into public.brands (name, sort) values
+  ('ASRV x Equinox', 1), ('VEXO Originals', 2), ('VEXO Essentials', 3), ('VEXO Performance Lab', 4)
+on conflict (name) do nothing;
+
 insert into public.collections (name, sort) values
   ('Men Originals', 1), ('Women Originals', 2), ('Originals', 3), ('Essentials', 4), ('Performance', 5), ('Limited Edition', 6)
 on conflict (name) do nothing;
-insert into public.sizes (name, sort) values ('S', 1), ('M', 2), ('L', 3), ('XL', 4) on conflict (name) do nothing;
-insert into public.colors (name, hex, sort) values
-  ('Sand', '#e4d9c6', 1), ('White', '#ffffff', 2), ('Rust', '#b3542f', 3), ('Black', '#141414', 4)
+
+insert into public.sizes (name, sort) values
+  ('XS', 1), ('S', 2), ('M', 3), ('L', 4), ('XL', 5), ('XXL', 6)
 on conflict (name) do nothing;
+
+insert into public.colors (name, hex, sort) values
+  ('Sand', '#e4d9c6', 1), ('White', '#ffffff', 2), ('Rust', '#b3542f', 3), ('Black', '#141414', 4),
+  ('Olive', '#5f6b4a', 5), ('Navy', '#28344d', 6), ('Charcoal', '#3a3c3f', 7), ('Stone', '#b8ad9c', 8)
+on conflict (name) do nothing;
+
 insert into public.materials (name, sort) values
-  ('Cotton-Poly Blend', 1), ('Organic Cotton', 2), ('Merino Wool', 3), ('Technical Nylon', 4)
+  ('Cotton-Poly Blend', 1), ('Organic Cotton', 2), ('Merino Wool', 3), ('Technical Nylon', 4),
+  ('Recycled Polyester', 5), ('French Terry', 6), ('Ripstop Nylon', 7)
 on conflict (name) do nothing;

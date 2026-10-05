@@ -19,21 +19,23 @@ type Props = {
   children?: ReactNode;
 };
 
-const SWAP_FADE_MS = 700;
+const CROSSFADE_MS = 500;
 
 /**
  * Pipeline: wrapper starts clipped (clip-path inset 100% from top) with the image zoomed in.
  * When in view → `.shown` → CSS transitions clip to 0 and zoom to 1 (see globals.css).
  *
- * If `src` changes later (e.g. a tab swap), the picture fades out, swaps, then fades back in
- * instead of jumping straight to the new image.
+ * If `src` changes later (e.g. a tab swap), the old picture stays put as a base layer while the
+ * new one fades in on top of it via a CSS `@keyframes` animation (not a transition — a transition
+ * needs a separately-painted "from" frame to interpolate from, which double-rAF didn't reliably
+ * get us here; a keyframe animation's start state is atomic, so it always plays).
  */
 export function RevealImage({ src, alt, className, imgClassName, sizes = "50vw", priority, delay = 0, children }: Props) {
   const ref = useRef<HTMLDivElement>(null);
   const shown = useInView(ref);
 
-  const [displayedSrc, setDisplayedSrc] = useState(src);
-  const [fadingOut, setFadingOut] = useState(false);
+  const [baseSrc, setBaseSrc] = useState(src);
+  const [incoming, setIncoming] = useState<string | null>(null);
   const isFirstRender = useRef(true);
 
   useEffect(() => {
@@ -41,29 +43,37 @@ export function RevealImage({ src, alt, className, imgClassName, sizes = "50vw",
       isFirstRender.current = false;
       return;
     }
-    if (src === displayedSrc) return;
-    setFadingOut(true);
+    if (src === baseSrc) return;
+
+    setIncoming(src);
     const timer = setTimeout(() => {
-      setDisplayedSrc(src);
-      setFadingOut(false);
-    }, SWAP_FADE_MS);
+      setBaseSrc(src);
+      setIncoming(null);
+    }, CROSSFADE_MS);
     return () => clearTimeout(timer);
-  }, [src, displayedSrc]);
+  }, [src, baseSrc]);
 
   return (
     <div ref={ref} className={cn("reveal overflow-hidden", shown && "shown", className)} style={{ "--rd": `${delay}s` } as CSSProperties}>
       <Image
-        src={displayedSrc}
+        src={baseSrc}
         alt={alt}
         fill
         sizes={sizes}
         priority={priority}
-        className={cn(
-          "reveal-img object-cover transition-opacity duration-700 ease-in-out",
-          fadingOut ? "opacity-0" : "opacity-100",
-          imgClassName,
-        )}
+        className={cn("reveal-img object-cover", imgClassName)}
       />
+      {incoming && (
+        <Image
+          key={incoming}
+          src={incoming}
+          alt={alt}
+          fill
+          sizes={sizes}
+          className={cn("reveal-img object-cover animate-fade", imgClassName)}
+          style={{ animationDuration: `${CROSSFADE_MS}ms`, animationTimingFunction: "ease-in-out" }}
+        />
+      )}
       {children}
     </div>
   );
