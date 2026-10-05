@@ -46,6 +46,19 @@ export function AdminProductForm() {
           </select>
         </label>
 
+        <label className={labelClasses}>
+          Collection
+          <select name="collection" defaultValue="" className={inputClasses}>
+            <option value="">None</option>
+            <option value="Men Originals">Men Originals</option>
+            <option value="Women Originals">Women Originals</option>
+            <option value="Originals">Originals</option>
+            <option value="Essentials">Essentials</option>
+            <option value="Performance">Performance</option>
+            <option value="Limited Edition">Limited Edition</option>
+          </select>
+        </label>
+
         <label className={`${labelClasses} md:col-span-2`}>
           Product image
           <input name="imageFile" type="file" accept="image/*" required className={`${inputClasses} file:mr-3 file:rounded-md file:border-0 file:bg-[#141414] file:px-3 file:py-1.5 file:text-white`} />
@@ -57,8 +70,11 @@ export function AdminProductForm() {
 
       <label className="mt-4 flex items-center gap-2 text-[13px]">
         <input name="isNewArrival" type="checkbox" defaultChecked className="size-4" />
-        Show in &quot;New Arrivals&quot;
+        New product
       </label>
+      <p className="mt-1 text-[12px] text-[#8e939a]">
+        Shows in &quot;New Arrivals&quot; and gets a NEW tag everywhere — the tag disappears on its own 10 days after adding.
+      </p>
 
       {state.status !== "idle" && (
         <p className={`mt-3 text-[13px] ${state.status === "error" ? "text-[#c23434]" : "text-[#3aa15c]"}`}>{state.message}</p>

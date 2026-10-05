@@ -1,8 +1,9 @@
 import Link from "next/link";
 import { RevealImage } from "@/components/atoms/RevealImage";
 import { LikeButton } from "@/components/atoms/LikeButton";
+import { Tag } from "@/components/atoms/Tag";
 import { QuickAddButton } from "@/components/molecules/QuickAddButton";
-import { formatPrice, cn } from "@/lib/utils";
+import { formatPrice, cn, isRecentlyAdded } from "@/lib/utils";
 import type { Product } from "@/lib/types";
 
 type Props = {
@@ -14,6 +15,8 @@ type Props = {
 };
 
 export function ProductCard({ product, delay = 0, className, imageClassName = "aspect-[203/279]", objectPosition }: Props) {
+  const isNew = product.isNewArrival && isRecentlyAdded(product.createdAt);
+
   return (
     <article className={className}>
       <Link href={`/products/${product.id}`}>
@@ -25,6 +28,16 @@ export function ProductCard({ product, delay = 0, className, imageClassName = "a
           className={cn("relative rounded-[1.4cqw] bg-panel", imageClassName)}
           imgClassName={objectPosition}
         >
+          {(isNew || product.collection) && (
+            <div className="absolute top-[1cqw] left-[1cqw] flex flex-col items-start gap-[0.4cqw]">
+              {isNew && (
+                <span className="inline-grid place-items-center rounded-full bg-ink px-[1.1cqw] py-[0.45cqw] text-[clamp(9px,0.78cqw,12px)] text-white">
+                  New
+                </span>
+              )}
+              {product.collection && <Tag>{product.collection}</Tag>}
+            </div>
+          )}
           <LikeButton
             productId={product.id}
             label={product.name}

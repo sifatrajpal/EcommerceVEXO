@@ -7,7 +7,10 @@ export type Product = {
   currency: string;
   season: string;
   category: ProductCategory;
+  collection: string | null;
   imageUrl: string;
+  isNewArrival: boolean;
+  createdAt: string;
 };
 
 export type EditTab = {

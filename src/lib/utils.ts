@@ -15,3 +15,10 @@ export function formatPrice(value: number, currency = "USD") {
 
 /** Flat delivery fee added at checkout — shared between the cart display and the order total. */
 export const DELIVERY_FEE = 12;
+
+const NEW_TAG_WINDOW_DAYS = 10;
+
+/** A product shows its "NEW" tag for its first 10 days — computed from createdAt, so it fades on its own. */
+export function isRecentlyAdded(createdAt: string) {
+  return Date.now() - new Date(createdAt).getTime() < NEW_TAG_WINDOW_DAYS * 24 * 60 * 60 * 1000;
+}

@@ -2,7 +2,6 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Panel } from "@/components/atoms/Panel";
 import { Tag } from "@/components/atoms/Tag";
-import { Text } from "@/components/atoms/Text";
 import { AnimatedHeading } from "@/components/atoms/AnimatedHeading";
 import { LikeButton } from "@/components/atoms/LikeButton";
 import { StarIcon } from "@/components/atoms/Icons";
@@ -12,18 +11,23 @@ import { ShareLinks } from "@/components/molecules/ShareLinks";
 import { ProductGallery } from "@/components/molecules/ProductGallery";
 import { AddToBagForm } from "@/components/molecules/AddToBagForm";
 import { SiteHeaderBar } from "@/components/organisms/SiteHeaderBar";
+import { ProductInfoTabs } from "@/components/organisms/ProductInfoTabs";
 import { getProductById } from "@/lib/data/queries";
-import { formatPrice } from "@/lib/utils";
+import { formatPrice, isRecentlyAdded } from "@/lib/utils";
 
 export const revalidate = 60;
 
 const SWATCHES = ["#e4d9c6", "#ffffff", "#b3542f", "#141414"];
+const DESCRIPTION =
+  "Performance-driven gear built for summer heat and winter cold. Cut from a breathable cotton-poly blend with four-way stretch, reinforced stitching at the seams, and a relaxed fit that moves with you through every rep — from warmup to cooldown.";
 
 // Next.js 15+: route params arrive as a Promise.
 export default async function ProductPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const product = await getProductById(id);
   if (!product) notFound();
+
+  const isNew = product.isNewArrival && isRecentlyAdded(product.createdAt);
 
   return (
     <main className="grid gap-2.5 p-2.5">
@@ -35,7 +39,11 @@ export default async function ProductPage({ params }: { params: Promise<{ id: st
           <ProductGallery images={[product.imageUrl]} alt={product.name} />
 
           <div className="flex flex-col gap-[1.3cqw]">
-            <Tag className="w-fit bg-panel">{product.season}</Tag>
+            <div className="flex flex-wrap items-center gap-[0.6cqw]">
+              <Tag className="bg-panel">{product.season}</Tag>
+              {product.collection && <Tag className="bg-panel">{product.collection}</Tag>}
+              {isNew && <span className="inline-grid place-items-center rounded-full bg-ink px-[1.1cqw] py-[0.45cqw] text-[clamp(9px,0.78cqw,12px)] text-white">New</span>}
+            </div>
             <AnimatedHeading as="h1" lines={[product.name.toUpperCase()]} className="text-[3.2cqw] leading-[0.95] font-medium tracking-[-0.04em]" />
 
             <div className="flex items-center gap-[0.3cqw] text-[#f5a623]">
@@ -44,7 +52,7 @@ export default async function ProductPage({ params }: { params: Promise<{ id: st
             </div>
 
             <p className="text-[clamp(18px,1.8cqw,28px)] font-medium">{formatPrice(product.price, product.currency)}</p>
-            <Text>Performance-driven gear built for summer heat and winter cold. Breathable, durable, and made to move with you.</Text>
+            <p className="text-[clamp(11px,0.9cqw,14px)] leading-[1.5] text-ink">{DESCRIPTION}</p>
 
             <div className="mt-[0.6cqw]">
               <p className="mb-[0.6cqw] text-[clamp(10px,0.82cqw,13px)] font-medium tracking-[0.04em] text-[#8e939a]">COLOR</p>
@@ -80,6 +88,8 @@ export default async function ProductPage({ params }: { params: Promise<{ id: st
             </div>
           </div>
         </div>
+
+        <ProductInfoTabs description={DESCRIPTION} />
       </Panel>
     </main>
   );

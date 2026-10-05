@@ -18,6 +18,7 @@ export async function createProduct(_prev: CreateProductState, formData: FormDat
   const currency = "USD";
   const season = String(formData.get("season") ?? "Winter");
   const category = String(formData.get("category") ?? "unisex");
+  const collection = String(formData.get("collection") ?? "").trim() || null;
   const isNewArrival = formData.get("isNewArrival") === "on";
   const imageFile = formData.get("imageFile");
 
@@ -47,6 +48,7 @@ export async function createProduct(_prev: CreateProductState, formData: FormDat
     currency,
     season,
     category,
+    collection,
     image_url: publicUrl,
     is_new_arrival: isNewArrival,
   });

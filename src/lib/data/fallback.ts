@@ -10,6 +10,12 @@ export const fallbackTabs: EditTab[] = [
   { id: "caps", label: "Caps", imageA: "/images/edit-hood.png", imageB: "/images/edit-look-3.png" },
 ];
 
+const COLLECTION_BY_CATEGORY: Record<Product["category"], string> = {
+  men: "Men Originals",
+  women: "Women Originals",
+  unisex: "Originals",
+};
+
 // Mirrors supabase/seed.sql — keep the two in sync.
 const seedProducts: { name: string; price: number; season: string; category: Product["category"]; image: string }[] = [
   { name: "ASRV x Equinox Lycra Hoodie", price: 116, season: "Winter", category: "men", image: "arrival-1" },
@@ -34,5 +40,8 @@ export const fallbackProducts: Product[] = seedProducts.map((p, i) => ({
   currency: "USD",
   season: p.season,
   category: p.category,
+  collection: COLLECTION_BY_CATEGORY[p.category],
   imageUrl: `/images/${p.image}.png`,
+  isNewArrival: i < 4,
+  createdAt: new Date(Date.now() - i * 24 * 60 * 60 * 1000).toISOString(),
 }));

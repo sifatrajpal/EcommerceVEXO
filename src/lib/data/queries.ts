@@ -10,11 +10,14 @@ type ProductRow = {
   currency: string;
   season: string;
   category: string;
+  collection: string | null;
   image_url: string;
+  is_new_arrival: boolean;
+  created_at: string;
 };
 type TabRow = { id: string; label: string; image_a: string; image_b: string };
 
-const PRODUCT_COLUMNS = "id, name, price, currency, season, category, image_url";
+const PRODUCT_COLUMNS = "id, name, price, currency, season, category, collection, image_url, is_new_arrival, created_at";
 
 function toProduct(r: ProductRow): Product {
   return {
@@ -24,7 +27,10 @@ function toProduct(r: ProductRow): Product {
     currency: r.currency,
     season: r.season,
     category: r.category as ProductCategory,
+    collection: r.collection,
     imageUrl: r.image_url,
+    isNewArrival: r.is_new_arrival,
+    createdAt: r.created_at,
   };
 }
 

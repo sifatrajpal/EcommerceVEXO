@@ -21,6 +21,9 @@ alter table public.products add column if not exists category text not null defa
 alter table public.products drop constraint if exists products_category_check;
 alter table public.products add constraint products_category_check check (category in ('men', 'women', 'unisex'));
 
+-- A collection/line label shown as a tag, e.g. "Men Originals", "Women Originals", "Originals".
+alter table public.products add column if not exists collection text;
+
 -- Tabs in "Built for every season & rep"
 create table if not exists public.edit_tabs (
   id         text primary key,               -- e.g. 'featured'
