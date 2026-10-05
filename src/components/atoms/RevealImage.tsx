@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useRef, type CSSProperties, type ReactNode } from "react";
+import { useEffect, useRef, useState, type CSSProperties, type ReactNode } from "react";
 import { useInView } from "@/hooks/useInView";
 import { cn } from "@/lib/utils";
 
@@ -15,23 +15,55 @@ type Props = {
   priority?: boolean;
   /** Stagger in seconds. */
   delay?: number;
-  /** Change to remount only the <Image> (used for tab swaps → fades in). */
-  imageKey?: string;
   /** Overlays (labels, buttons) that reveal together with the picture. */
   children?: ReactNode;
 };
 
+const SWAP_FADE_MS = 260;
+
 /**
  * Pipeline: wrapper starts clipped (clip-path inset 100% from top) with the image zoomed in.
  * When in view → `.shown` → CSS transitions clip to 0 and zoom to 1 (see globals.css).
+ *
+ * If `src` changes later (e.g. a tab swap), the picture fades out, swaps, then fades back in
+ * instead of jumping straight to the new image.
  */
-export function RevealImage({ src, alt, className, imgClassName, sizes = "50vw", priority, delay = 0, imageKey, children }: Props) {
+export function RevealImage({ src, alt, className, imgClassName, sizes = "50vw", priority, delay = 0, children }: Props) {
   const ref = useRef<HTMLDivElement>(null);
   const shown = useInView(ref);
 
+  const [displayedSrc, setDisplayedSrc] = useState(src);
+  const [fadingOut, setFadingOut] = useState(false);
+  const isFirstRender = useRef(true);
+
+  useEffect(() => {
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      return;
+    }
+    if (src === displayedSrc) return;
+    setFadingOut(true);
+    const timer = setTimeout(() => {
+      setDisplayedSrc(src);
+      setFadingOut(false);
+    }, SWAP_FADE_MS);
+    return () => clearTimeout(timer);
+  }, [src, displayedSrc]);
+
   return (
     <div ref={ref} className={cn("reveal overflow-hidden", shown && "shown", className)} style={{ "--rd": `${delay}s` } as CSSProperties}>
-      <Image key={imageKey} src={src} alt={alt} fill sizes={sizes} priority={priority} className={cn("reveal-img object-cover", imgClassName)} />
+      <Image
+        src={displayedSrc}
+        alt={alt}
+        fill
+        sizes={sizes}
+        priority={priority}
+        className={cn(
+          "reveal-img object-cover transition-opacity ease-out",
+          fadingOut ? "opacity-0 duration-200" : "opacity-100 duration-300",
+          imgClassName,
+        )}
+      />
       {children}
     </div>
   );

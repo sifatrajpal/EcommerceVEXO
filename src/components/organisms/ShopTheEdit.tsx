@@ -16,8 +16,8 @@ import { TabBar } from "@/components/molecules/TabBar";
 import type { EditTab } from "@/lib/types";
 
 /**
- * Tabs pipeline: click tab → setActive(i) → new imageA/imageB
- * → `imageKey` changes → React remounts only the <Image> → `animate-fade` plays.
+ * Tabs pipeline: click tab → setActive(i) → new imageA/imageB src
+ * → RevealImage fades the old picture out, swaps it, then fades the new one in.
  */
 export function ShopTheEdit({ tabs }: { tabs: EditTab[] }) {
   const [active, setActive] = useState(0);
@@ -46,20 +46,18 @@ export function ShopTheEdit({ tabs }: { tabs: EditTab[] }) {
           <div role="tabpanel" aria-label={tab.label} className="mt-[2cqw] grid grid-cols-[1.15fr_1fr] gap-[2.2cqw]">
             <RevealImage
               src={tab.imageA}
-              imageKey={tab.imageA}
               alt={`${tab.label} look`}
               sizes="(max-width: 768px) 55vw, 30vw"
               className="relative h-[26cqw] rounded-[1.4cqw] max-md:h-[55cqw]"
-              imgClassName="animate-fade object-[50%_25%]"
+              imgClassName="object-[50%_25%]"
             />
             <RevealImage
               src={tab.imageB}
-              imageKey={tab.imageB}
               alt={`${tab.label} detail`}
               delay={0.12}
               sizes="(max-width: 768px) 45vw, 25vw"
               className="relative h-[26cqw] rounded-[1.4cqw] max-md:h-[55cqw]"
-              imgClassName="animate-fade object-[50%_30%]"
+              imgClassName="object-[50%_30%]"
             />
           </div>
         </div>
