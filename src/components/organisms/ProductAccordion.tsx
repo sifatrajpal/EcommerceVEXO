@@ -53,7 +53,15 @@ function Row({ title, defaultOpen = false, action, children }: { title: string; 
   );
 }
 
-export function ProductAccordion({ description }: { description: string }) {
+type Props = { description: string; brand?: string | null; material?: string | null };
+
+export function ProductAccordion({ description, brand, material }: Props) {
+  const details = [
+    ...(brand ? [`Brand: ${brand}`] : []),
+    ...(material ? [`Material: ${material}`] : []),
+    ...CARE_AND_DETAILS,
+  ];
+
   return (
     <div className="mt-[2.8cqw] border-t border-[#e4e5e8]">
       <Row
@@ -101,7 +109,7 @@ export function ProductAccordion({ description }: { description: string }) {
 
       <Row title="Details">
         <ul className="flex flex-col gap-[0.5cqw]">
-          {CARE_AND_DETAILS.map((line) => (
+          {details.map((line) => (
             <li key={line} className="flex gap-[0.6cqw]">
               <span className="text-[#8e939a]">—</span>
               {line}

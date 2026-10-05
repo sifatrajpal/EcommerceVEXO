@@ -2,14 +2,14 @@
 
 import { useState } from "react";
 
-const SIZES = ["S", "M", "L", "XL"];
+const DEFAULT_SIZES = ["S", "M", "L", "XL"];
 
-export function SizeSelector({ defaultSize = "M" }: { defaultSize?: string }) {
-  const [selected, setSelected] = useState(defaultSize);
+export function SizeSelector({ sizes = DEFAULT_SIZES, defaultSize }: { sizes?: string[]; defaultSize?: string }) {
+  const [selected, setSelected] = useState(defaultSize ?? sizes[Math.min(1, sizes.length - 1)] ?? sizes[0]);
 
   return (
-    <div className="flex gap-[0.7cqw]">
-      {SIZES.map((size) => (
+    <div className="flex flex-wrap gap-[0.7cqw]">
+      {sizes.map((size) => (
         <button
           key={size}
           type="button"

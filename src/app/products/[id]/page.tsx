@@ -14,22 +14,35 @@ import { SiteHeaderBar } from "@/components/organisms/SiteHeaderBar";
 import { ProductAccordion } from "@/components/organisms/ProductAccordion";
 import { ExploreOthers } from "@/components/organisms/ExploreOthers";
 import { getProductById, getProducts } from "@/lib/data/queries";
+import { getSizes, getColors } from "@/lib/data/catalog-meta";
 import { formatPrice, isRecentlyAdded } from "@/lib/utils";
 
 export const revalidate = 60;
 
-const SWATCHES = ["#e4d9c6", "#ffffff", "#b3542f", "#141414"];
+const DEFAULT_SWATCHES = [
+  { id: "sand", name: "Sand", hex: "#e4d9c6" },
+  { id: "white", name: "White", hex: "#ffffff" },
+  { id: "rust", name: "Rust", hex: "#b3542f" },
+  { id: "black", name: "Black", hex: "#141414" },
+];
 const DESCRIPTION =
   "Performance-driven gear built for summer heat and winter cold. Cut from a breathable cotton-poly blend with four-way stretch, reinforced stitching at the seams, and a relaxed fit that moves with you through every rep — from warmup to cooldown.";
 
 // Next.js 15+: route params arrive as a Promise.
 export default async function ProductPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const product = await getProductById(id);
+  const [product, others, sizes, colors] = await Promise.all([
+    getProductById(id),
+    getProducts(),
+    getSizes(),
+    getColors(),
+  ]);
   if (!product) notFound();
 
   const isNew = product.isNewArrival && isRecentlyAdded(product.createdAt);
-  const others = (await getProducts()).filter((p) => p.id !== product.id).slice(0, 4);
+  const otherProducts = others.filter((p) => p.id !== product.id).slice(0, 4);
+  const swatches = colors.length > 0 ? colors : DEFAULT_SWATCHES;
+  const sizeNames = sizes.length > 0 ? sizes.map((s) => s.name) : undefined;
 
   return (
     <main className="grid gap-2.5 p-2.5">
@@ -59,15 +72,20 @@ export default async function ProductPage({ params }: { params: Promise<{ id: st
             <div className="mt-[0.6cqw]">
               <p className="mb-[0.6cqw] text-[clamp(10px,0.82cqw,13px)] font-medium tracking-[0.04em] text-[#8e939a]">COLOR</p>
               <div className="flex gap-[0.7cqw]">
-                {SWATCHES.map((color) => (
-                  <span key={color} className="size-[1.6cqw] min-h-6 min-w-6 rounded-full border border-[#e4e5e8]" style={{ backgroundColor: color }} />
+                {swatches.map((color) => (
+                  <span
+                    key={color.id}
+                    title={color.name}
+                    className="size-[1.6cqw] min-h-6 min-w-6 rounded-full border border-[#e4e5e8]"
+                    style={{ backgroundColor: color.hex }}
+                  />
                 ))}
               </div>
             </div>
 
             <div>
               <p className="mb-[0.6cqw] text-[clamp(10px,0.82cqw,13px)] font-medium tracking-[0.04em] text-[#8e939a]">SIZE</p>
-              <SizeSelector />
+              <SizeSelector sizes={sizeNames} />
             </div>
 
             <AddToBagForm
@@ -91,8 +109,8 @@ export default async function ProductPage({ params }: { params: Promise<{ id: st
           </div>
         </div>
 
-        <ProductAccordion description={DESCRIPTION} />
-        <ExploreOthers products={others} />
+        <ProductAccordion description={DESCRIPTION} brand={product.brand} material={product.material} />
+        <ExploreOthers products={otherProducts} />
       </Panel>
     </main>
   );

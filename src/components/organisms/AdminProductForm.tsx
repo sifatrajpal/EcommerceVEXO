@@ -2,13 +2,16 @@
 
 import { useActionState, useEffect, useRef } from "react";
 import { createProduct, type CreateProductState } from "@/actions/admin-products";
+import type { MetaItem } from "@/lib/data/catalog-meta";
 
 const initial: CreateProductState = { status: "idle" };
 
 const inputClasses = "w-full rounded-md border border-[#d8dade] bg-white px-3 py-2 text-[14px] outline-none focus:border-ink";
 const labelClasses = "flex flex-col gap-1.5 text-[13px] font-medium";
 
-export function AdminProductForm() {
+type Props = { collections: MetaItem[]; brands: MetaItem[]; materials: MetaItem[] };
+
+export function AdminProductForm({ collections, brands, materials }: Props) {
   const [state, formAction, pending] = useActionState(createProduct, initial);
   const formRef = useRef<HTMLFormElement>(null);
 
@@ -50,12 +53,29 @@ export function AdminProductForm() {
           Collection
           <select name="collection" defaultValue="" className={inputClasses}>
             <option value="">None</option>
-            <option value="Men Originals">Men Originals</option>
-            <option value="Women Originals">Women Originals</option>
-            <option value="Originals">Originals</option>
-            <option value="Essentials">Essentials</option>
-            <option value="Performance">Performance</option>
-            <option value="Limited Edition">Limited Edition</option>
+            {collections.map((c) => (
+              <option key={c.id} value={c.name}>{c.name}</option>
+            ))}
+          </select>
+        </label>
+
+        <label className={labelClasses}>
+          Brand
+          <select name="brand" defaultValue="" className={inputClasses}>
+            <option value="">None</option>
+            {brands.map((b) => (
+              <option key={b.id} value={b.name}>{b.name}</option>
+            ))}
+          </select>
+        </label>
+
+        <label className={labelClasses}>
+          Material
+          <select name="material" defaultValue="" className={inputClasses}>
+            <option value="">None</option>
+            {materials.map((m) => (
+              <option key={m.id} value={m.name}>{m.name}</option>
+            ))}
           </select>
         </label>
 

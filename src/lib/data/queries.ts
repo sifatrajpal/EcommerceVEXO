@@ -11,13 +11,15 @@ type ProductRow = {
   season: string;
   category: string;
   collection: string | null;
+  brand: string | null;
+  material: string | null;
   image_url: string;
   is_new_arrival: boolean;
   created_at: string;
 };
 type TabRow = { id: string; label: string; image_a: string; image_b: string };
 
-const PRODUCT_COLUMNS = "id, name, price, currency, season, category, collection, image_url, is_new_arrival, created_at";
+const PRODUCT_COLUMNS = "id, name, price, currency, season, category, collection, brand, material, image_url, is_new_arrival, created_at";
 
 function toProduct(r: ProductRow): Product {
   return {
@@ -28,6 +30,8 @@ function toProduct(r: ProductRow): Product {
     season: r.season,
     category: r.category as ProductCategory,
     collection: r.collection,
+    brand: r.brand,
+    material: r.material,
     imageUrl: r.image_url,
     isNewArrival: r.is_new_arrival,
     createdAt: r.created_at,

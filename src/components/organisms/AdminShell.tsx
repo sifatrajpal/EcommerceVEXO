@@ -12,6 +12,11 @@ import {
   BellIcon,
   LogOutIcon,
   PanelLeftIcon,
+  ReceiptIcon,
+  TagIcon,
+  RulerIcon,
+  PaletteIcon,
+  LayersIcon,
 } from "@/components/atoms/Icons";
 
 type IconType = ComponentType<SVGProps<SVGSVGElement>>;
@@ -20,12 +25,24 @@ type NavGroup = { label: string; items: NavItem[] };
 
 const NAV_GROUPS: NavGroup[] = [
   { label: "Overview", items: [{ href: "/admin", label: "Dashboard", icon: GridIcon }] },
-  { label: "Commerce", items: [{ href: "/admin/orders", label: "Orders", icon: BagIcon }] },
+  {
+    label: "Commerce",
+    items: [
+      { href: "/admin/orders", label: "Orders", icon: BagIcon },
+      { href: "/admin/invoices", label: "Invoices", icon: ReceiptIcon },
+    ],
+  },
   {
     label: "Catalog",
     items: [
       { href: "/admin/products", label: "Products", icon: BoxIcon },
       { href: "/admin/products/new", label: "Add Product", icon: PlusIcon },
+      { href: "/admin/categories", label: "Categories", icon: GridIcon },
+      { href: "/admin/brands", label: "Brands", icon: TagIcon },
+      { href: "/admin/collections", label: "Collections", icon: LayersIcon },
+      { href: "/admin/sizes", label: "Sizes", icon: RulerIcon },
+      { href: "/admin/colors", label: "Colors", icon: PaletteIcon },
+      { href: "/admin/materials", label: "Materials", icon: ReceiptIcon },
     ],
   },
 ];
@@ -33,8 +50,15 @@ const NAV_GROUPS: NavGroup[] = [
 const PAGE_TITLES: Record<string, string> = {
   "/admin": "Dashboard",
   "/admin/orders": "Orders",
+  "/admin/invoices": "Invoices",
   "/admin/products": "Products",
   "/admin/products/new": "Add Product",
+  "/admin/categories": "Categories",
+  "/admin/brands": "Brands",
+  "/admin/collections": "Collections",
+  "/admin/sizes": "Sizes",
+  "/admin/colors": "Colors",
+  "/admin/materials": "Materials",
 };
 
 type Props = {

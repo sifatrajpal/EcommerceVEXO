@@ -41,6 +41,8 @@ export const fallbackProducts: Product[] = seedProducts.map((p, i) => ({
   season: p.season,
   category: p.category,
   collection: COLLECTION_BY_CATEGORY[p.category],
+  brand: "ASRV x Equinox",
+  material: "Cotton-Poly Blend",
   imageUrl: `/images/${p.image}.png`,
   isNewArrival: i < 4,
   createdAt: new Date(Date.now() - i * 24 * 60 * 60 * 1000).toISOString(),

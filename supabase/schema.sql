@@ -23,6 +23,8 @@ alter table public.products add constraint products_category_check check (catego
 
 -- A collection/line label shown as a tag, e.g. "Men Originals", "Women Originals", "Originals".
 alter table public.products add column if not exists collection text;
+alter table public.products add column if not exists brand text;
+alter table public.products add column if not exists material text;
 
 -- Tabs in "Built for every season & rep"
 create table if not exists public.edit_tabs (
@@ -215,4 +217,109 @@ create policy "public insert contact_messages" on public.contact_messages for in
 -- Only an admin can read submitted messages.
 drop policy if exists "admin read contact_messages" on public.contact_messages;
 create policy "admin read contact_messages" on public.contact_messages for select to authenticated
+  using (exists (select 1 from public.admins a where a.user_id = auth.uid()));
+
+-- ─────────────────────────────────────────────────────────────
+-- Catalog reference data — admin-managed master lists that feed the
+-- Add Product form (brand/collection/material) and the size/color
+-- pickers shown on every product page.
+-- ─────────────────────────────────────────────────────────────
+create table if not exists public.categories (
+  id         uuid primary key default gen_random_uuid(),
+  name       text not null unique,
+  sort       int not null default 0,
+  created_at timestamptz not null default now()
+);
+create table if not exists public.brands (
+  id         uuid primary key default gen_random_uuid(),
+  name       text not null unique,
+  sort       int not null default 0,
+  created_at timestamptz not null default now()
+);
+create table if not exists public.collections (
+  id         uuid primary key default gen_random_uuid(),
+  name       text not null unique,
+  sort       int not null default 0,
+  created_at timestamptz not null default now()
+);
+create table if not exists public.sizes (
+  id         uuid primary key default gen_random_uuid(),
+  name       text not null unique,
+  sort       int not null default 0,
+  created_at timestamptz not null default now()
+);
+create table if not exists public.colors (
+  id         uuid primary key default gen_random_uuid(),
+  name       text not null unique,
+  hex        text not null default '#141414',
+  sort       int not null default 0,
+  created_at timestamptz not null default now()
+);
+create table if not exists public.materials (
+  id         uuid primary key default gen_random_uuid(),
+  name       text not null unique,
+  sort       int not null default 0,
+  created_at timestamptz not null default now()
+);
+
+alter table public.categories  enable row level security;
+alter table public.brands      enable row level security;
+alter table public.collections enable row level security;
+alter table public.sizes       enable row level security;
+alter table public.colors      enable row level security;
+alter table public.materials   enable row level security;
+
+-- Every reference table: anyone can read it (it drives public pages), only an admin can add/remove entries.
+drop policy if exists "public read categories" on public.categories;
+create policy "public read categories" on public.categories for select to anon, authenticated using (true);
+drop policy if exists "admin insert categories" on public.categories;
+create policy "admin insert categories" on public.categories for insert to authenticated
+  with check (exists (select 1 from public.admins a where a.user_id = auth.uid()));
+drop policy if exists "admin delete categories" on public.categories;
+create policy "admin delete categories" on public.categories for delete to authenticated
+  using (exists (select 1 from public.admins a where a.user_id = auth.uid()));
+
+drop policy if exists "public read brands" on public.brands;
+create policy "public read brands" on public.brands for select to anon, authenticated using (true);
+drop policy if exists "admin insert brands" on public.brands;
+create policy "admin insert brands" on public.brands for insert to authenticated
+  with check (exists (select 1 from public.admins a where a.user_id = auth.uid()));
+drop policy if exists "admin delete brands" on public.brands;
+create policy "admin delete brands" on public.brands for delete to authenticated
+  using (exists (select 1 from public.admins a where a.user_id = auth.uid()));
+
+drop policy if exists "public read collections" on public.collections;
+create policy "public read collections" on public.collections for select to anon, authenticated using (true);
+drop policy if exists "admin insert collections" on public.collections;
+create policy "admin insert collections" on public.collections for insert to authenticated
+  with check (exists (select 1 from public.admins a where a.user_id = auth.uid()));
+drop policy if exists "admin delete collections" on public.collections;
+create policy "admin delete collections" on public.collections for delete to authenticated
+  using (exists (select 1 from public.admins a where a.user_id = auth.uid()));
+
+drop policy if exists "public read sizes" on public.sizes;
+create policy "public read sizes" on public.sizes for select to anon, authenticated using (true);
+drop policy if exists "admin insert sizes" on public.sizes;
+create policy "admin insert sizes" on public.sizes for insert to authenticated
+  with check (exists (select 1 from public.admins a where a.user_id = auth.uid()));
+drop policy if exists "admin delete sizes" on public.sizes;
+create policy "admin delete sizes" on public.sizes for delete to authenticated
+  using (exists (select 1 from public.admins a where a.user_id = auth.uid()));
+
+drop policy if exists "public read colors" on public.colors;
+create policy "public read colors" on public.colors for select to anon, authenticated using (true);
+drop policy if exists "admin insert colors" on public.colors;
+create policy "admin insert colors" on public.colors for insert to authenticated
+  with check (exists (select 1 from public.admins a where a.user_id = auth.uid()));
+drop policy if exists "admin delete colors" on public.colors;
+create policy "admin delete colors" on public.colors for delete to authenticated
+  using (exists (select 1 from public.admins a where a.user_id = auth.uid()));
+
+drop policy if exists "public read materials" on public.materials;
+create policy "public read materials" on public.materials for select to anon, authenticated using (true);
+drop policy if exists "admin insert materials" on public.materials;
+create policy "admin insert materials" on public.materials for insert to authenticated
+  with check (exists (select 1 from public.admins a where a.user_id = auth.uid()));
+drop policy if exists "admin delete materials" on public.materials;
+create policy "admin delete materials" on public.materials for delete to authenticated
   using (exists (select 1 from public.admins a where a.user_id = auth.uid()));

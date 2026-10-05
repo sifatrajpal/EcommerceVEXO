@@ -8,6 +8,8 @@ export type Product = {
   season: string;
   category: ProductCategory;
   collection: string | null;
+  brand: string | null;
+  material: string | null;
   imageUrl: string;
   isNewArrival: boolean;
   createdAt: string;
