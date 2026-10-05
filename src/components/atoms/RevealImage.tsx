@@ -19,7 +19,7 @@ type Props = {
   children?: ReactNode;
 };
 
-const SWAP_FADE_MS = 260;
+const SWAP_FADE_MS = 700;
 
 /**
  * Pipeline: wrapper starts clipped (clip-path inset 100% from top) with the image zoomed in.
@@ -59,8 +59,8 @@ export function RevealImage({ src, alt, className, imgClassName, sizes = "50vw",
         sizes={sizes}
         priority={priority}
         className={cn(
-          "reveal-img object-cover transition-opacity ease-out",
-          fadingOut ? "opacity-0 duration-200" : "opacity-100 duration-300",
+          "reveal-img object-cover transition-opacity duration-700 ease-in-out",
+          fadingOut ? "opacity-0" : "opacity-100",
           imgClassName,
         )}
       />

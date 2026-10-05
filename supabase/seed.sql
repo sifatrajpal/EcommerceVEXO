@@ -1,7 +1,7 @@
 -- Sample data using the images in /public/images. Safe to re-run.
 insert into public.edit_tabs (id, label, image_a, image_b, sort) values
-  ('featured',  'Featured',  '/images/edit-hood.png',       '/images/edit-look-4.png', 1),
-  ('tops',      'Tops',      '/images/pick-summer.png',     '/images/edit-look-2.png', 2),
+  ('featured',  'Featured',  '/images/pick-summer.png',     '/images/edit-look-2.png', 1),
+  ('tops',      'Tops',      '/images/edit-hood.png',       '/images/edit-look-4.png', 2),
   ('shorts',    'Shorts',    '/images/edit-shorts.png',     '/images/edit-look-1.png', 3),
   ('layers',    'Layers',    '/images/feature-athlete.png', '/images/edit-look-3.png', 4),
   ('outerwear', 'Outerwear', '/images/pick-winter.png',     '/images/edit-look-4.png', 5),

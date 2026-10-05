@@ -2,8 +2,8 @@ import type { EditTab, Product } from "@/lib/types";
 
 // Used when Supabase isn't configured yet (or a query fails).
 export const fallbackTabs: EditTab[] = [
-  { id: "featured", label: "Featured", imageA: "/images/edit-hood.png", imageB: "/images/edit-look-4.png" },
-  { id: "tops", label: "Tops", imageA: "/images/pick-summer.png", imageB: "/images/edit-look-2.png" },
+  { id: "featured", label: "Featured", imageA: "/images/pick-summer.png", imageB: "/images/edit-look-2.png" },
+  { id: "tops", label: "Tops", imageA: "/images/edit-hood.png", imageB: "/images/edit-look-4.png" },
   { id: "shorts", label: "Shorts", imageA: "/images/edit-shorts.png", imageB: "/images/edit-look-1.png" },
   { id: "layers", label: "Layers", imageA: "/images/feature-athlete.png", imageB: "/images/edit-look-3.png" },
   { id: "outerwear", label: "Outerwear", imageA: "/images/pick-winter.png", imageB: "/images/edit-look-4.png" },
