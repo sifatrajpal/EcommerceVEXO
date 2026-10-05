@@ -11,8 +11,9 @@ import { ShareLinks } from "@/components/molecules/ShareLinks";
 import { ProductGallery } from "@/components/molecules/ProductGallery";
 import { AddToBagForm } from "@/components/molecules/AddToBagForm";
 import { SiteHeaderBar } from "@/components/organisms/SiteHeaderBar";
-import { ProductInfoTabs } from "@/components/organisms/ProductInfoTabs";
-import { getProductById } from "@/lib/data/queries";
+import { ProductAccordion } from "@/components/organisms/ProductAccordion";
+import { ExploreOthers } from "@/components/organisms/ExploreOthers";
+import { getProductById, getProducts } from "@/lib/data/queries";
 import { formatPrice, isRecentlyAdded } from "@/lib/utils";
 
 export const revalidate = 60;
@@ -28,6 +29,7 @@ export default async function ProductPage({ params }: { params: Promise<{ id: st
   if (!product) notFound();
 
   const isNew = product.isNewArrival && isRecentlyAdded(product.createdAt);
+  const others = (await getProducts()).filter((p) => p.id !== product.id).slice(0, 4);
 
   return (
     <main className="grid gap-2.5 p-2.5">
@@ -89,7 +91,8 @@ export default async function ProductPage({ params }: { params: Promise<{ id: st
           </div>
         </div>
 
-        <ProductInfoTabs description={DESCRIPTION} />
+        <ProductAccordion description={DESCRIPTION} />
+        <ExploreOthers products={others} />
       </Panel>
     </main>
   );

@@ -11,6 +11,9 @@ export const HeartIcon = ({ filled, ...p }: SVGProps<SVGSVGElement> & { filled?:
 export const ChevronRightIcon = (p: SVGProps<SVGSVGElement>) => (
   <svg {...base} stroke="currentColor" {...p}><path d="M9 6l6 6-6 6" /></svg>
 );
+export const ChevronDownIcon = (p: SVGProps<SVGSVGElement>) => (
+  <svg {...base} stroke="currentColor" {...p}><path d="M6 9l6 6 6-6" /></svg>
+);
 export const ArrowUpRightIcon = (p: SVGProps<SVGSVGElement>) => (
   <svg {...base} stroke="currentColor" {...p}><path d="M7 17L17 7M9 7h8v8" /></svg>
 );
