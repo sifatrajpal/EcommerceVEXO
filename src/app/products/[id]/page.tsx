@@ -4,19 +4,20 @@ import { Panel } from "@/components/atoms/Panel";
 import { Tag } from "@/components/atoms/Tag";
 import { Text } from "@/components/atoms/Text";
 import { AnimatedHeading } from "@/components/atoms/AnimatedHeading";
-import { HeartButton } from "@/components/atoms/HeartButton";
+import { LikeButton } from "@/components/atoms/LikeButton";
 import { StarIcon } from "@/components/atoms/Icons";
 import { QuantityStepper } from "@/components/molecules/QuantityStepper";
+import { SizeSelector } from "@/components/molecules/SizeSelector";
 import { ShareLinks } from "@/components/molecules/ShareLinks";
 import { ProductGallery } from "@/components/molecules/ProductGallery";
 import { AddToBagForm } from "@/components/molecules/AddToBagForm";
+import { SiteHeaderBar } from "@/components/organisms/SiteHeaderBar";
 import { getProductById } from "@/lib/data/queries";
 import { formatPrice } from "@/lib/utils";
 
 export const revalidate = 60;
 
 const SWATCHES = ["#e4d9c6", "#ffffff", "#b3542f", "#141414"];
-const SIZES = ["S", "M", "L", "XL"];
 
 // Next.js 15+: route params arrive as a Promise.
 export default async function ProductPage({ params }: { params: Promise<{ id: string }> }) {
@@ -25,7 +26,8 @@ export default async function ProductPage({ params }: { params: Promise<{ id: st
   if (!product) notFound();
 
   return (
-    <main className="p-2.5">
+    <main className="grid gap-2.5 p-2.5">
+      <SiteHeaderBar />
       <Panel className="p-[3cqw]">
         <Link href="/" className="mb-[2cqw] inline-block text-[clamp(11px,0.85cqw,13px)] hover:opacity-60">← Back to VEXO</Link>
 
@@ -55,21 +57,19 @@ export default async function ProductPage({ params }: { params: Promise<{ id: st
 
             <div>
               <p className="mb-[0.6cqw] text-[clamp(10px,0.82cqw,13px)] font-medium tracking-[0.04em] text-[#8e939a]">SIZE</p>
-              <div className="flex gap-[0.7cqw]">
-                {SIZES.map((size, i) => (
-                  <span
-                    key={size}
-                    className={`grid size-9 place-items-center rounded-full border text-[13px] ${i === 1 ? "border-ink bg-ink text-white" : "border-[#d8dade] text-[#6b7078]"}`}
-                  >
-                    {size}
-                  </span>
-                ))}
-              </div>
+              <SizeSelector />
             </div>
 
             <AddToBagForm
               productId={product.id}
-              after={<HeartButton label={product.name} className="size-11 min-h-11 min-w-11 shrink-0 border border-[#e4e5e8] bg-white" />}
+              after={
+                <LikeButton
+                  productId={product.id}
+                  label={product.name}
+                  showCount
+                  className="shrink-0"
+                />
+              }
             >
               <QuantityStepper />
             </AddToBagForm>

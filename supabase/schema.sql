@@ -15,7 +15,7 @@ create table if not exists public.products (
   sort           int not null default 0,
   created_at     timestamptz not null default now()
 );
-
+  
 -- Safe to re-run: adds the column (+ constraint) if this table was created before "category" existed.
 alter table public.products add column if not exists category text not null default 'unisex';
 alter table public.products drop constraint if exists products_category_check;
@@ -153,3 +153,49 @@ create policy "own or admin read order_items" on public.order_items for select t
 drop policy if exists "own insert order_items" on public.order_items;
 create policy "own insert order_items" on public.order_items for insert to authenticated
   with check (exists (select 1 from public.orders o where o.id = order_id and o.user_id = auth.uid()));
+
+-- ─────────────────────────────────────────────────────────────
+-- Product likes — no account required. Each browser gets a random
+-- id (stored in localStorage) that stands in for "who liked this".
+-- ─────────────────────────────────────────────────────────────
+create table if not exists public.product_likes (
+  id         uuid primary key default gen_random_uuid(),
+  product_id uuid not null references public.products(id) on delete cascade,
+  liker_key  text not null,
+  created_at timestamptz not null default now(),
+  unique (product_id, liker_key)
+);
+
+alter table public.product_likes enable row level security;
+
+-- Public so the like count and "did I already like this" check work for signed-out visitors too.
+drop policy if exists "public read product_likes" on public.product_likes;
+create policy "public read product_likes" on public.product_likes for select to anon, authenticated using (true);
+
+drop policy if exists "public insert product_likes" on public.product_likes;
+create policy "public insert product_likes" on public.product_likes for insert to anon, authenticated with check (true);
+
+drop policy if exists "public delete product_likes" on public.product_likes;
+create policy "public delete product_likes" on public.product_likes for delete to anon, authenticated using (true);
+
+-- ─────────────────────────────────────────────────────────────
+-- Contact form submissions (/contact)
+-- ─────────────────────────────────────────────────────────────
+create table if not exists public.contact_messages (
+  id         uuid primary key default gen_random_uuid(),
+  name       text not null,
+  email      text not null check (email ~* '^[^@\s]+@[^@\s]+\.[^@\s]+$'),
+  subject    text not null,
+  message    text not null,
+  created_at timestamptz not null default now()
+);
+
+alter table public.contact_messages enable row level security;
+
+drop policy if exists "public insert contact_messages" on public.contact_messages;
+create policy "public insert contact_messages" on public.contact_messages for insert to anon, authenticated with check (true);
+
+-- Only an admin can read submitted messages.
+drop policy if exists "admin read contact_messages" on public.contact_messages;
+create policy "admin read contact_messages" on public.contact_messages for select to authenticated
+  using (exists (select 1 from public.admins a where a.user_id = auth.uid()));

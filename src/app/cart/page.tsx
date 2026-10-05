@@ -8,6 +8,7 @@ import { createSupabaseServerClient } from "@/lib/supabase/auth-server";
 import { getCartItems } from "@/lib/data/cart";
 import { updateCartQuantity, removeFromCart, clearCart } from "@/actions/cart";
 import { placeOrder } from "@/actions/checkout";
+import { SiteHeaderBar } from "@/components/organisms/SiteHeaderBar";
 import { formatPrice, DELIVERY_FEE } from "@/lib/utils";
 
 export default async function CartPage() {
@@ -22,7 +23,8 @@ export default async function CartPage() {
   const currency = items[0]?.product.currency ?? "USD";
 
   return (
-    <main className="min-h-screen bg-frame p-2.5">
+    <main className="grid min-h-screen gap-2.5 bg-frame p-2.5">
+      <SiteHeaderBar />
       <div className="mx-auto max-w-[1100px] rounded-[22px] bg-panel px-6 py-8 md:px-10 md:py-10">
         <p className="text-[13px] text-[#8e939a]">
           <Link href="/" className="hover:text-ink">Home</Link> / <span className="text-ink">Shopping Bag</span>

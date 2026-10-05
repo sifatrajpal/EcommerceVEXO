@@ -19,10 +19,16 @@ export const footerColumns: { title: string; links: NavItem[] }[] = [
       { label: "Men", href: "/shop?category=men" },
       { label: "Women", href: "/shop?category=women" },
       { label: "Trending", href: "/shop" },
-      { label: "Seasonal", href: "#" },
-      { label: "Accessories", href: "#" },
     ],
   },
-  { title: "HELP", links: ["Shipping", "Returns", "Size guide", "Contact us"].map((l) => ({ label: l, href: "#" })) },
+  {
+    title: "HELP",
+    links: [
+      { label: "Shipping", href: "/shipping" },
+      { label: "Returns", href: "/returns" },
+      { label: "Size guide", href: "/size-guide" },
+      { label: "Contact us", href: "/contact" },
+    ],
+  },
   { title: "FOLLOW", links: ["Instagram", "TikTok", "YouTube", "Pinterest"].map((l) => ({ label: l, href: "#" })) },
 ];

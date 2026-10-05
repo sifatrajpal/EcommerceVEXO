@@ -75,7 +75,7 @@ export function ShopTheEdit({ tabs }: { tabs: EditTab[] }) {
               className="mb-[1.3cqw] text-[2.4cqw] leading-[0.98] font-medium tracking-[-0.03em]"
             />
             <Text>Thermal hoods, face covers and caps that lock in warmth without the bulk.</Text>
-            <Link href="#" className="group mt-[1.8cqw] inline-block border-b border-ink pb-0.5 text-[clamp(10px,0.88cqw,14px)]">
+            <Link href="/shop?season=winter" className="group mt-[1.8cqw] inline-block border-b border-ink pb-0.5 text-[clamp(10px,0.88cqw,14px)]">
               Explore layers <span className="inline-block transition-transform group-hover:translate-x-1">→</span>
             </Link>
           </div>
@@ -99,7 +99,7 @@ export function ShopTheEdit({ tabs }: { tabs: EditTab[] }) {
           imgClassName="object-[50%_22%]"
         >
           <Tag className="absolute top-[1.6cqw] left-[1.6cqw]">LOOKBOOK 2026</Tag>
-          <IconCircle label="Open lookbook" href="#" className="absolute right-[1.6cqw] bottom-[1.6cqw] size-[3.2cqw] min-h-7.5 min-w-7.5 bg-white transition-transform duration-300 hover:rotate-45">
+          <IconCircle label="Open lookbook" href="/shop" className="absolute right-[1.6cqw] bottom-[1.6cqw] size-[3.2cqw] min-h-7.5 min-w-7.5 bg-white transition-transform duration-300 hover:rotate-45">
             <ArrowUpRightIcon />
           </IconCircle>
         </RevealImage>

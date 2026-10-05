@@ -1,12 +1,10 @@
 import Link from "next/link";
 import { redirect, notFound } from "next/navigation";
-import { Button } from "@/components/atoms/Button";
 import { createSupabaseServerClient } from "@/lib/supabase/auth-server";
 import { isCurrentUserAdmin } from "@/lib/admin";
 import { getAdminStats, getRecentOrders, getTopProducts, getCartActivity, getSubscriberCount } from "@/lib/data/admin-stats";
 import { getProductCount } from "@/lib/data/queries";
 import { formatPrice } from "@/lib/utils";
-import { AdminProductForm } from "@/components/organisms/AdminProductForm";
 
 export default async function AdminPage() {
   const supabase = await createSupabaseServerClient();
@@ -35,20 +33,13 @@ export default async function AdminPage() {
   ];
 
   return (
-    <main className="min-h-screen bg-frame p-2.5">
-      <div className="mx-auto max-w-[1100px] rounded-[22px] bg-panel px-6 py-8 md:px-10 md:py-10">
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <div>
-            <p className="text-[13px] text-[#8e939a]">
-              <Link href="/" className="hover:text-ink">Home</Link> / <span className="text-ink">Admin</span>
-            </p>
-            <h1 className="mt-3 text-3xl font-bold tracking-tight md:text-4xl">ADMIN</h1>
-            <p className="mt-1 text-[13px] text-[#8e939a]">Signed in as {user.email}</p>
-          </div>
-          <Button href="/" variant="light" shape="pill" className="!px-5 !py-2.5">← Back to VEXO</Button>
-        </div>
+    <div className="rounded-[22px] bg-panel px-6 py-8 md:px-10 md:py-10">
+      <div>
+        <h1 className="text-3xl font-bold tracking-tight md:text-4xl">ADMIN</h1>
+        <p className="mt-1 text-[13px] text-[#8e939a]">Signed in as {user.email}</p>
+      </div>
 
-        <div className="mt-8 grid grid-cols-2 gap-4 md:grid-cols-4">
+      <div className="mt-8 grid grid-cols-2 gap-4 md:grid-cols-4">
           {cards.map((c) => (
             <div key={c.label} className="rounded-[14px] bg-white p-5">
               <p className="text-[13px] text-[#8e939a]">{c.label}</p>
@@ -116,12 +107,6 @@ export default async function AdminPage() {
             )}
           </div>
         </div>
-
-        <div className="mt-10">
-          <h2 className="mb-3 text-lg font-semibold">Add Product</h2>
-          <AdminProductForm />
-        </div>
       </div>
-    </main>
   );
 }

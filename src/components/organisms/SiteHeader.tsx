@@ -29,9 +29,12 @@ export async function SiteHeader() {
             <Button href="/admin" variant="subtle" shape="pill" className="!px-[1.6cqw] !py-[1cqw]">ADMIN</Button>
           )}
           {user ? (
-            <form action={signOut}>
-              <Button type="submit" shape="pill" className="!px-[1.6cqw] !py-[1cqw]">SIGN OUT</Button>
-            </form>
+            <>
+              <Button href="/account" variant="subtle" shape="pill" className="!px-[1.6cqw] !py-[1cqw]">ACCOUNT</Button>
+              <form action={signOut}>
+                <Button type="submit" shape="pill" className="!px-[1.6cqw] !py-[1cqw]">SIGN OUT</Button>
+              </form>
+            </>
           ) : (
             <Button href="/sign-in" shape="pill" className="!px-[1.6cqw] !py-[1cqw]">SIGN&nbsp; IN / UP</Button>
           )}

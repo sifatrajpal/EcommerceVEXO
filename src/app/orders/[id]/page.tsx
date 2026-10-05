@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Panel } from "@/components/atoms/Panel";
 import { Button } from "@/components/atoms/Button";
+import { SiteHeaderBar } from "@/components/organisms/SiteHeaderBar";
 import { getOrderById } from "@/lib/data/orders";
 import { formatPrice } from "@/lib/utils";
 
@@ -11,8 +12,9 @@ export default async function OrderPage({ params }: { params: Promise<{ id: stri
   if (!order) notFound();
 
   return (
-    <main className="grid min-h-screen place-items-center p-2.5">
-      <Panel className="mx-auto w-full max-w-[480px] p-[3cqw]">
+    <main className="grid min-h-screen grid-rows-[auto_1fr] gap-2.5 p-2.5">
+      <SiteHeaderBar />
+      <Panel className="mx-auto w-full max-w-[480px] self-center p-[3cqw]">
         <p className="text-[13px] font-medium tracking-[0.04em] text-[#3aa15c]">ORDER PLACED</p>
         <h1 className="mt-1 text-2xl font-medium">Thanks for your order</h1>
         <p className="mt-1 text-[13px] text-[#8e939a]">

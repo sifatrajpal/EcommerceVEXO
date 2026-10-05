@@ -1,9 +1,9 @@
-import Link from "next/link";
 import { Panel } from "@/components/atoms/Panel";
 import { AnimatedHeading } from "@/components/atoms/AnimatedHeading";
 import { RevealImage } from "@/components/atoms/RevealImage";
 import { ProductCard } from "@/components/molecules/ProductCard";
 import { ShopFilters } from "@/components/organisms/ShopFilters";
+import { SiteHeaderBar } from "@/components/organisms/SiteHeaderBar";
 import { getProducts, type ProductSort } from "@/lib/data/queries";
 import type { ProductCategory } from "@/lib/types";
 
@@ -32,13 +32,12 @@ export default async function ShopPage({
 
   return (
     <main className="grid gap-2.5 p-2.5">
+      <SiteHeaderBar />
       <Panel className="px-[2.6cqw] pt-[2.6cqw] pb-[3cqw]">
         <div className="flex gap-[2.2cqw]">
           <ShopFilters category={validCategory} season={validSeason} sort={validSort} />
 
           <div className="min-w-0 flex-1">
-            <Link href="/" className="text-[clamp(20px,2.2cqw,32px)] font-semibold tracking-[0.02em]">VEXO</Link>
-
             <RevealImage
               src="/images/arrival-6.png"
               alt="New season editorial campaign"

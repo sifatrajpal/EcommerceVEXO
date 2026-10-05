@@ -29,11 +29,14 @@ export function SiteFooter() {
         className="mt-[4cqw] text-center text-[27cqw] leading-[0.78] font-extralight tracking-[-0.02em] whitespace-nowrap [font-stretch:125%]"
       />
 
-      <div className="flex justify-between border-t border-[#2a2a2a] pt-[1.4cqw] pb-[1.8cqw] text-[clamp(10px,0.8cqw,13px)] text-[#7d8189]">
+      <div className="flex flex-wrap items-center justify-between gap-[0.8cqw] border-t border-[#2a2a2a] pt-[1.4cqw] pb-[1.8cqw] text-[clamp(10px,0.8cqw,13px)] text-[#7d8189]">
         <span>© 2026 VEXO. All rights reserved.</span>
         <nav aria-label="Legal" className="flex gap-[2.2cqw]">
           <Link href="#">Privacy</Link><Link href="#">Terms</Link><Link href="#">Cookies</Link>
         </nav>
+        <a href="https://inspiringwave.in/" target="_blank" rel="noopener noreferrer" className="hover:text-[#e9ebed]">
+          Designed and developed by INSPIRING WAVE
+        </a>
       </div>
     </Panel>
   );
