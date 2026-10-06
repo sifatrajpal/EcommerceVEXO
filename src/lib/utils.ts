@@ -16,6 +16,9 @@ export function formatPrice(value: number, currency = "USD") {
 /** Flat delivery fee added at checkout — shared between the cart display and the order total. */
 export const DELIVERY_FEE = 12;
 
+/** Below this many units, the storefront shows a "only N left" warning on that color/size. */
+export const LOW_STOCK_THRESHOLD = 15;
+
 const NEW_TAG_WINDOW_DAYS = 10;
 
 /** A product shows its "NEW" tag for its first 10 days — computed from createdAt, so it fades on its own. */

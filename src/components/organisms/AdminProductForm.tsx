@@ -3,6 +3,7 @@
 import { useActionState, useEffect, useRef } from "react";
 import { createProduct, updateProduct, type CreateProductState } from "@/actions/admin-products";
 import type { MetaItem } from "@/lib/data/catalog-meta";
+import type { StockOption } from "@/lib/data/inventory";
 import type { Product } from "@/lib/types";
 
 const initial: CreateProductState = { status: "idle" };
@@ -19,11 +20,25 @@ type Props = {
   collections: MetaItem[];
   brands: MetaItem[];
   materials: MetaItem[];
+  allColors: MetaItem[];
+  allSizes: MetaItem[];
+  colorStock?: StockOption[];
+  sizeStock?: StockOption[];
   /** Pass an existing product to switch the form into edit mode (prefilled, image optional). */
   product?: Product;
 };
 
-export function AdminProductForm({ categories, collections, brands, materials, product }: Props) {
+export function AdminProductForm({
+  categories,
+  collections,
+  brands,
+  materials,
+  allColors,
+  allSizes,
+  colorStock = [],
+  sizeStock = [],
+  product,
+}: Props) {
   const isEdit = !!product;
   const [state, formAction, pending] = useActionState(isEdit ? updateProduct : createProduct, initial);
   const formRef = useRef<HTMLFormElement>(null);
@@ -118,6 +133,66 @@ export function AdminProductForm({ categories, collections, brands, materials, p
           </span>
         </label>
       </div>
+
+      <div className="mt-5 grid gap-4 md:grid-cols-2">
+        <div>
+          <p className="mb-2 text-[13px] font-medium">Colors in stock</p>
+          {allColors.length === 0 ? (
+            <p className="text-[12px] text-[#8e939a]">Add some colors in Admin → Colors first.</p>
+          ) : (
+            <div className="flex flex-col gap-2">
+              {allColors.map((c) => {
+                const existing = colorStock.find((s) => s.id === c.id);
+                return (
+                  <label key={c.id} className="flex items-center gap-2 rounded-md border border-[#d8dade] px-3 py-2">
+                    <input type="checkbox" name="colorIds" value={c.id} defaultChecked={!!existing} className="size-4 shrink-0" />
+                    <span className="size-3.5 shrink-0 rounded-full border border-[#e4e5e8]" style={{ backgroundColor: c.hex }} />
+                    <span className="flex-1 truncate text-[13px]">{c.name}</span>
+                    <input
+                      type="number"
+                      name={`colorQty_${c.id}`}
+                      min="0"
+                      defaultValue={existing?.quantity ?? 0}
+                      aria-label={`${c.name} quantity`}
+                      className="w-16 shrink-0 rounded border border-[#d8dade] px-1.5 py-1 text-[12px]"
+                    />
+                  </label>
+                );
+              })}
+            </div>
+          )}
+        </div>
+
+        <div>
+          <p className="mb-2 text-[13px] font-medium">Sizes in stock</p>
+          {allSizes.length === 0 ? (
+            <p className="text-[12px] text-[#8e939a]">Add some sizes in Admin → Sizes first.</p>
+          ) : (
+            <div className="flex flex-col gap-2">
+              {allSizes.map((s) => {
+                const existing = sizeStock.find((o) => o.id === s.id);
+                return (
+                  <label key={s.id} className="flex items-center gap-2 rounded-md border border-[#d8dade] px-3 py-2">
+                    <input type="checkbox" name="sizeIds" value={s.id} defaultChecked={!!existing} className="size-4 shrink-0" />
+                    <span className="flex-1 truncate text-[13px]">{s.name}</span>
+                    <input
+                      type="number"
+                      name={`sizeQty_${s.id}`}
+                      min="0"
+                      defaultValue={existing?.quantity ?? 0}
+                      aria-label={`${s.name} quantity`}
+                      className="w-16 shrink-0 rounded border border-[#d8dade] px-1.5 py-1 text-[12px]"
+                    />
+                  </label>
+                );
+              })}
+            </div>
+          )}
+        </div>
+      </div>
+      <p className="mt-2 text-[12px] text-[#8e939a]">
+        Check a color or size to make it available, and set how many are in stock. Below 15 shows a low-stock warning on the product page.
+      </p>
 
       <label className="mt-4 flex items-center gap-2 text-[13px]">
         <input name="isNewArrival" type="checkbox" defaultChecked={product?.isNewArrival ?? true} className="size-4" />

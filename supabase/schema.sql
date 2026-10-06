@@ -350,3 +350,46 @@ create policy "public read reviews" on public.reviews for select to anon, authen
 
 drop policy if exists "public insert reviews" on public.reviews;
 create policy "public insert reviews" on public.reviews for insert to anon, authenticated with check (true);
+
+-- Only an admin can delete a product (everyone else has read-only access, added above).
+drop policy if exists "admin delete products" on public.products;
+create policy "admin delete products" on public.products for delete to authenticated
+  using (exists (select 1 from public.admins a where a.user_id = auth.uid()));
+
+-- ─────────────────────────────────────────────────────────────
+-- Per-product stock, broken out by color and by size — each is its
+-- own simple breakdown (not a combined color×size matrix) so the
+-- admin can set "this product has 8 Black left" and separately
+-- "this product has 12 L left" without needing every combination.
+-- ─────────────────────────────────────────────────────────────
+create table if not exists public.product_colors (
+  id         uuid primary key default gen_random_uuid(),
+  product_id uuid not null references public.products(id) on delete cascade,
+  color_id   uuid not null references public.colors(id) on delete cascade,
+  quantity   int not null default 0 check (quantity >= 0),
+  unique (product_id, color_id)
+);
+create table if not exists public.product_sizes (
+  id         uuid primary key default gen_random_uuid(),
+  product_id uuid not null references public.products(id) on delete cascade,
+  size_id    uuid not null references public.sizes(id) on delete cascade,
+  quantity   int not null default 0 check (quantity >= 0),
+  unique (product_id, size_id)
+);
+
+alter table public.product_colors enable row level security;
+alter table public.product_sizes  enable row level security;
+
+drop policy if exists "public read product_colors" on public.product_colors;
+create policy "public read product_colors" on public.product_colors for select to anon, authenticated using (true);
+drop policy if exists "admin write product_colors" on public.product_colors;
+create policy "admin write product_colors" on public.product_colors for all to authenticated
+  using (exists (select 1 from public.admins a where a.user_id = auth.uid()))
+  with check (exists (select 1 from public.admins a where a.user_id = auth.uid()));
+
+drop policy if exists "public read product_sizes" on public.product_sizes;
+create policy "public read product_sizes" on public.product_sizes for select to anon, authenticated using (true);
+drop policy if exists "admin write product_sizes" on public.product_sizes;
+create policy "admin write product_sizes" on public.product_sizes for all to authenticated
+  using (exists (select 1 from public.admins a where a.user_id = auth.uid()))
+  with check (exists (select 1 from public.admins a where a.user_id = auth.uid()));

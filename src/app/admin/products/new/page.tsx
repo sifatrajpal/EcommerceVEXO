@@ -1,12 +1,14 @@
 import { AdminProductForm } from "@/components/organisms/AdminProductForm";
-import { getCategories, getCollections, getBrands, getMaterials } from "@/lib/data/catalog-meta";
+import { getCategories, getCollections, getBrands, getMaterials, getColors, getSizes } from "@/lib/data/catalog-meta";
 
 export default async function NewProductPage() {
-  const [categories, collections, brands, materials] = await Promise.all([
+  const [categories, collections, brands, materials, allColors, allSizes] = await Promise.all([
     getCategories(),
     getCollections(),
     getBrands(),
     getMaterials(),
+    getColors(),
+    getSizes(),
   ]);
 
   return (
@@ -15,7 +17,14 @@ export default async function NewProductPage() {
       <p className="mt-1 text-[13px] text-[#8e939a]">Upload a new item into the catalog.</p>
 
       <div className="mt-8">
-        <AdminProductForm categories={categories} collections={collections} brands={brands} materials={materials} />
+        <AdminProductForm
+          categories={categories}
+          collections={collections}
+          brands={brands}
+          materials={materials}
+          allColors={allColors}
+          allSizes={allSizes}
+        />
       </div>
     </div>
   );

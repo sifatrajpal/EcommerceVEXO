@@ -7,6 +7,7 @@ import { LikeButton } from "@/components/atoms/LikeButton";
 import { StarIcon } from "@/components/atoms/Icons";
 import { QuantityStepper } from "@/components/molecules/QuantityStepper";
 import { SizeSelector } from "@/components/molecules/SizeSelector";
+import { ColorSelector } from "@/components/molecules/ColorSelector";
 import { ShareLinks } from "@/components/molecules/ShareLinks";
 import { ProductGallery } from "@/components/molecules/ProductGallery";
 import { AddToBagForm } from "@/components/molecules/AddToBagForm";
@@ -16,15 +17,16 @@ import { ExploreOthers } from "@/components/organisms/ExploreOthers";
 import { getProductById, getProducts } from "@/lib/data/queries";
 import { getSizes, getColors } from "@/lib/data/catalog-meta";
 import { getReviews, getRatingSummary } from "@/lib/data/reviews";
+import { getProductColorStock, getProductSizeStock } from "@/lib/data/inventory";
 import { formatPrice, isRecentlyAdded } from "@/lib/utils";
 
 export const revalidate = 60;
 
 const DEFAULT_SWATCHES = [
-  { id: "sand", name: "Sand", hex: "#e4d9c6" },
-  { id: "white", name: "White", hex: "#ffffff" },
-  { id: "rust", name: "Rust", hex: "#b3542f" },
-  { id: "black", name: "Black", hex: "#141414" },
+  { id: "sand", name: "Sand", hex: "#e4d9c6", quantity: 0 },
+  { id: "white", name: "White", hex: "#ffffff", quantity: 0 },
+  { id: "rust", name: "Rust", hex: "#b3542f", quantity: 0 },
+  { id: "black", name: "Black", hex: "#141414", quantity: 0 },
 ];
 const DESCRIPTION =
   "Performance-driven gear built for summer heat and winter cold. Cut from a breathable cotton-poly blend with four-way stretch, reinforced stitching at the seams, and a relaxed fit that moves with you through every rep — from warmup to cooldown.";
@@ -32,20 +34,26 @@ const DESCRIPTION =
 // Next.js 15+: route params arrive as a Promise.
 export default async function ProductPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const [product, others, sizes, colors, reviews, ratingSummary] = await Promise.all([
+  const [product, others, sizes, colors, reviews, ratingSummary, colorStock, sizeStock] = await Promise.all([
     getProductById(id),
     getProducts(),
     getSizes(),
     getColors(),
     getReviews(id),
     getRatingSummary(id),
+    getProductColorStock(id),
+    getProductSizeStock(id),
   ]);
   if (!product) notFound();
 
   const isNew = product.isNewArrival && isRecentlyAdded(product.createdAt);
   const otherProducts = others.filter((p) => p.id !== product.id).slice(0, 4);
-  const swatches = colors.length > 0 ? colors : DEFAULT_SWATCHES;
-  const sizeNames = sizes.length > 0 ? sizes.map((s) => s.name) : undefined;
+
+  const trackColorStock = colorStock.length > 0;
+  const swatches = trackColorStock ? colorStock : colors.length > 0 ? colors.map((c) => ({ ...c, quantity: 0 })) : DEFAULT_SWATCHES;
+
+  const trackSizeStock = sizeStock.length > 0;
+  const sizeOptions = trackSizeStock ? sizeStock : sizes.length > 0 ? sizes.map((s) => ({ ...s, quantity: 0 })) : undefined;
 
   return (
     <main className="grid gap-2.5 p-2.5">
@@ -82,21 +90,12 @@ export default async function ProductPage({ params }: { params: Promise<{ id: st
 
             <div className="mt-[0.6cqw]">
               <p className="mb-[0.6cqw] text-[clamp(10px,0.82cqw,13px)] font-medium tracking-[0.04em] text-[#8e939a]">COLOR</p>
-              <div className="flex gap-[0.7cqw]">
-                {swatches.map((color) => (
-                  <span
-                    key={color.id}
-                    title={color.name}
-                    className="size-[1.6cqw] min-h-6 min-w-6 rounded-full border border-[#e4e5e8]"
-                    style={{ backgroundColor: color.hex }}
-                  />
-                ))}
-              </div>
+              <ColorSelector colors={swatches} trackStock={trackColorStock} />
             </div>
 
             <div>
               <p className="mb-[0.6cqw] text-[clamp(10px,0.82cqw,13px)] font-medium tracking-[0.04em] text-[#8e939a]">SIZE</p>
-              <SizeSelector sizes={sizeNames} />
+              <SizeSelector sizes={sizeOptions} trackStock={trackSizeStock} />
             </div>
 
             <AddToBagForm

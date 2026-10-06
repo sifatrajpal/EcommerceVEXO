@@ -1,16 +1,21 @@
 import { notFound } from "next/navigation";
 import { AdminProductForm } from "@/components/organisms/AdminProductForm";
 import { getProductById } from "@/lib/data/queries";
-import { getCategories, getCollections, getBrands, getMaterials } from "@/lib/data/catalog-meta";
+import { getCategories, getCollections, getBrands, getMaterials, getColors, getSizes } from "@/lib/data/catalog-meta";
+import { getProductColorStock, getProductSizeStock } from "@/lib/data/inventory";
 
 export default async function EditProductPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const [product, categories, collections, brands, materials] = await Promise.all([
+  const [product, categories, collections, brands, materials, allColors, allSizes, colorStock, sizeStock] = await Promise.all([
     getProductById(id),
     getCategories(),
     getCollections(),
     getBrands(),
     getMaterials(),
+    getColors(),
+    getSizes(),
+    getProductColorStock(id),
+    getProductSizeStock(id),
   ]);
   if (!product) notFound();
 
@@ -25,6 +30,10 @@ export default async function EditProductPage({ params }: { params: Promise<{ id
           collections={collections}
           brands={brands}
           materials={materials}
+          allColors={allColors}
+          allSizes={allSizes}
+          colorStock={colorStock}
+          sizeStock={sizeStock}
           product={product}
         />
       </div>

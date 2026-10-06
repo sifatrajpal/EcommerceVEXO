@@ -21,12 +21,13 @@ export function TopPicks() {
       <div className="grid grid-cols-[1fr_1.5fr_1fr] items-start gap-[3.2cqw]">
         <div className="flex flex-col gap-[1.2cqw] animate-float">
           <RevealImage
-            src="/images/edit-hood.png"
-            alt="Model in a dark hood, face covered against the cold"
+            src="/images/arrival-6.png"
+            alt="Model in a tailored brown suit from the Women Originals line"
             sizes="(max-width: 768px) 30vw, 18vw"
             className="relative aspect-[3/2] rounded-[1.6cqw]"
+            imgClassName="object-top"
           />
-          <Text>Performance-driven gear for men — built for summer heat and winter cold.</Text>
+          <Text>Performance-driven gear for everyone — built for summer heat and winter cold.</Text>
         </div>
 
         <RevealImage
@@ -41,11 +42,12 @@ export function TopPicks() {
         <div className="flex h-full flex-col gap-[1.2cqw] self-stretch animate-float [animation-delay:3s]">
           <Text>Stay warm, stay fit. Our winter workout wear blends insulation with flexibility to keep you going in the toughest conditions.</Text>
           <RevealImage
-            src="/images/pick-winter.png"
-            alt="Detail shot of winter workout wear"
+            src="/images/arrival-3.png"
+            alt="Model in an olive suit set from the Women Originals line"
             delay={0.24}
             sizes="(max-width: 768px) 30vw, 18vw"
             className="relative mt-auto aspect-[3/2] rounded-[1.6cqw]"
+            imgClassName="object-top"
           />
         </div>
       </div>
