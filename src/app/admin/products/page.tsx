@@ -2,24 +2,37 @@ import Image from "next/image";
 import Link from "next/link";
 import { DeleteProductButton } from "@/components/molecules/DeleteProductButton";
 import { getProducts } from "@/lib/data/queries";
-import { getAllColorStock, getAllSizeStock, type StockOption } from "@/lib/data/inventory";
+import { getAllVariants, type Variant } from "@/lib/data/inventory";
 import { formatPrice, isRecentlyAdded, LOW_STOCK_THRESHOLD } from "@/lib/utils";
 
-function StockList({ items }: { items: StockOption[] }) {
-  if (items.length === 0) return <span className="text-[#8e939a]">—</span>;
+function VariantList({ variants }: { variants: Variant[] }) {
+  if (variants.length === 0) return <span className="text-[#8e939a]">—</span>;
+
+  const bySize = new Map<string, { sizeName: string; colors: Variant[] }>();
+  for (const v of variants) {
+    const entry = bySize.get(v.sizeId) ?? { sizeName: v.sizeName, colors: [] };
+    entry.colors.push(v);
+    bySize.set(v.sizeId, entry);
+  }
+
   return (
-    <div className="flex flex-wrap gap-x-2 gap-y-1">
-      {items.map((s) => (
-        <span key={s.id} className={s.quantity < LOW_STOCK_THRESHOLD ? "font-medium text-[#c23434]" : ""}>
-          {s.name}: {s.quantity}
-        </span>
+    <div className="flex flex-col gap-1">
+      {Array.from(bySize.values()).map(({ sizeName, colors }) => (
+        <div key={sizeName} className="flex flex-wrap gap-x-1.5">
+          <span className="font-medium">{sizeName}:</span>
+          {colors.map((c) => (
+            <span key={c.colorId} className={c.quantity < LOW_STOCK_THRESHOLD ? "font-medium text-[#c23434]" : ""}>
+              {c.colorName} {c.quantity}
+            </span>
+          ))}
+        </div>
       ))}
     </div>
   );
 }
 
 export default async function AdminProductsPage() {
-  const [products, colorStockMap, sizeStockMap] = await Promise.all([getProducts(), getAllColorStock(), getAllSizeStock()]);
+  const [products, variantsMap] = await Promise.all([getProducts(), getAllVariants()]);
 
   return (
     <div className="flex flex-col gap-4">
@@ -47,8 +60,7 @@ export default async function AdminProductsPage() {
                   <th className="px-5 py-3 font-medium">Product</th>
                   <th className="px-5 py-3 font-medium">Category</th>
                   <th className="px-5 py-3 font-medium">Collection</th>
-                  <th className="px-5 py-3 font-medium">Colors in stock</th>
-                  <th className="px-5 py-3 font-medium">Sizes in stock</th>
+                  <th className="px-5 py-3 font-medium">Sizes &amp; colors in stock</th>
                   <th className="px-5 py-3 font-medium">New</th>
                   <th className="px-5 py-3 text-right font-medium">Price</th>
                   <th className="px-5 py-3 text-right font-medium">Actions</th>
@@ -67,8 +79,7 @@ export default async function AdminProductsPage() {
                     </td>
                     <td className="px-5 py-3 capitalize">{p.category}</td>
                     <td className="px-5 py-3">{p.collection ?? "—"}</td>
-                    <td className="px-5 py-3"><StockList items={colorStockMap.get(p.id) ?? []} /></td>
-                    <td className="px-5 py-3"><StockList items={sizeStockMap.get(p.id) ?? []} /></td>
+                    <td className="px-5 py-3"><VariantList variants={variantsMap.get(p.id) ?? []} /></td>
                     <td className="px-5 py-3">{p.isNewArrival && isRecentlyAdded(p.createdAt) ? "Yes" : "—"}</td>
                     <td className="px-5 py-3 text-right font-medium">{formatPrice(p.price, p.currency)}</td>
                     <td className="px-5 py-3 text-right">

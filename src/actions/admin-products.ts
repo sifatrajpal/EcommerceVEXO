@@ -9,33 +9,33 @@ export type CreateProductState = { status: "idle" | "success" | "error"; message
 
 type SupabaseClient = Awaited<ReturnType<typeof createSupabaseServerClient>>;
 
-/** Replaces a product's color (or size) stock rows with whatever the form just submitted. */
-async function syncStock(
-  supabase: SupabaseClient,
-  table: "product_colors" | "product_sizes",
-  fkColumn: "color_id" | "size_id",
-  idsFieldName: string,
-  qtyPrefix: string,
-  productId: string,
-  formData: FormData,
-) {
-  await supabase.from(table).delete().eq("product_id", productId);
+/**
+ * Replaces a product's size→color stock matrix with whatever the form just
+ * submitted. The form sends which sizes are selected ("sizeIds"), and for
+ * each selected size, which colors are available within it ("colorIds_<sizeId>")
+ * plus a quantity per (size, color) pair ("variantQty_<sizeId>_<colorId>").
+ */
+async function syncVariants(supabase: SupabaseClient, productId: string, formData: FormData) {
+  await supabase.from("product_variants").delete().eq("product_id", productId);
 
-  const ids = formData.getAll(idsFieldName).map(String).filter(Boolean);
-  if (ids.length === 0) return;
+  const sizeIds = formData.getAll("sizeIds").map(String).filter(Boolean);
+  if (sizeIds.length === 0) return;
 
-  const rows = ids.map((id) => ({
-    product_id: productId,
-    [fkColumn]: id,
-    quantity: Math.max(0, Math.trunc(Number(formData.get(`${qtyPrefix}${id}`)) || 0)),
-  }));
+  const rows: { product_id: string; size_id: string; color_id: string; quantity: number }[] = [];
+  for (const sizeId of sizeIds) {
+    const colorIds = formData.getAll(`colorIds_${sizeId}`).map(String).filter(Boolean);
+    for (const colorId of colorIds) {
+      rows.push({
+        product_id: productId,
+        size_id: sizeId,
+        color_id: colorId,
+        quantity: Math.max(0, Math.trunc(Number(formData.get(`variantQty_${sizeId}_${colorId}`)) || 0)),
+      });
+    }
+  }
 
-  await supabase.from(table).insert(rows);
-}
-
-async function syncAllStock(supabase: SupabaseClient, productId: string, formData: FormData) {
-  await syncStock(supabase, "product_colors", "color_id", "colorIds", "colorQty_", productId, formData);
-  await syncStock(supabase, "product_sizes", "size_id", "sizeIds", "sizeQty_", productId, formData);
+  if (rows.length === 0) return;
+  await supabase.from("product_variants").insert(rows);
 }
 
 export async function createProduct(_prev: CreateProductState, formData: FormData): Promise<CreateProductState> {
@@ -97,7 +97,7 @@ export async function createProduct(_prev: CreateProductState, formData: FormDat
     return { status: "error", message: "Couldn't save that product." };
   }
 
-  await syncAllStock(supabase, inserted.id, formData);
+  await syncVariants(supabase, inserted.id, formData);
 
   revalidatePath("/", "layout");
   revalidatePath("/shop");
@@ -164,7 +164,7 @@ export async function updateProduct(_prev: CreateProductState, formData: FormDat
     return { status: "error", message: "Couldn't update that product." };
   }
 
-  await syncAllStock(supabase, productId, formData);
+  await syncVariants(supabase, productId, formData);
 
   revalidatePath("/", "layout");
   revalidatePath("/shop");

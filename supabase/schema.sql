@@ -357,10 +357,11 @@ create policy "admin delete products" on public.products for delete to authentic
   using (exists (select 1 from public.admins a where a.user_id = auth.uid()));
 
 -- ─────────────────────────────────────────────────────────────
--- Per-product stock, broken out by color and by size — each is its
--- own simple breakdown (not a combined color×size matrix) so the
--- admin can set "this product has 8 Black left" and separately
--- "this product has 12 L left" without needing every combination.
+-- NOTE: product_colors / product_sizes below are superseded by
+-- product_variants (a size→color matrix: the admin picks a size,
+-- then picks which colors exist in that size and the quantity of
+-- each). The app no longer reads or writes these two tables — kept
+-- only so existing data isn't dropped.
 -- ─────────────────────────────────────────────────────────────
 create table if not exists public.product_colors (
   id         uuid primary key default gen_random_uuid(),
@@ -391,5 +392,29 @@ drop policy if exists "public read product_sizes" on public.product_sizes;
 create policy "public read product_sizes" on public.product_sizes for select to anon, authenticated using (true);
 drop policy if exists "admin write product_sizes" on public.product_sizes;
 create policy "admin write product_sizes" on public.product_sizes for all to authenticated
+  using (exists (select 1 from public.admins a where a.user_id = auth.uid()))
+  with check (exists (select 1 from public.admins a where a.user_id = auth.uid()));
+
+-- ─────────────────────────────────────────────────────────────
+-- Per-product stock as a size→color matrix: a row exists only for a
+-- (size, color) combination the admin has actually stocked. Admin
+-- flow: pick a size, then pick which colors exist in that size and
+-- the quantity of each — not two independent breakdowns.
+-- ─────────────────────────────────────────────────────────────
+create table if not exists public.product_variants (
+  id         uuid primary key default gen_random_uuid(),
+  product_id uuid not null references public.products(id) on delete cascade,
+  size_id    uuid not null references public.sizes(id) on delete cascade,
+  color_id   uuid not null references public.colors(id) on delete cascade,
+  quantity   int not null default 0 check (quantity >= 0),
+  unique (product_id, size_id, color_id)
+);
+
+alter table public.product_variants enable row level security;
+
+drop policy if exists "public read product_variants" on public.product_variants;
+create policy "public read product_variants" on public.product_variants for select to anon, authenticated using (true);
+drop policy if exists "admin write product_variants" on public.product_variants;
+create policy "admin write product_variants" on public.product_variants for all to authenticated
   using (exists (select 1 from public.admins a where a.user_id = auth.uid()))
   with check (exists (select 1 from public.admins a where a.user_id = auth.uid()));
