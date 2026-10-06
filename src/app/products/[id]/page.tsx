@@ -15,6 +15,7 @@ import { ProductAccordion } from "@/components/organisms/ProductAccordion";
 import { ExploreOthers } from "@/components/organisms/ExploreOthers";
 import { getProductById, getProducts } from "@/lib/data/queries";
 import { getSizes, getColors } from "@/lib/data/catalog-meta";
+import { getReviews, getRatingSummary } from "@/lib/data/reviews";
 import { formatPrice, isRecentlyAdded } from "@/lib/utils";
 
 export const revalidate = 60;
@@ -31,11 +32,13 @@ const DESCRIPTION =
 // Next.js 15+: route params arrive as a Promise.
 export default async function ProductPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const [product, others, sizes, colors] = await Promise.all([
+  const [product, others, sizes, colors, reviews, ratingSummary] = await Promise.all([
     getProductById(id),
     getProducts(),
     getSizes(),
     getColors(),
+    getReviews(id),
+    getRatingSummary(id),
   ]);
   if (!product) notFound();
 
@@ -61,9 +64,17 @@ export default async function ProductPage({ params }: { params: Promise<{ id: st
             </div>
             <AnimatedHeading as="h1" lines={[product.name.toUpperCase()]} className="text-[3.2cqw] leading-[0.95] font-medium tracking-[-0.04em]" />
 
-            <div className="flex items-center gap-[0.3cqw] text-[#f5a623]">
-              {[0, 1, 2, 3].map((i) => <StarIcon key={i} filled className="size-4" />)}
-              <StarIcon className="size-4" />
+            <div className="flex items-center gap-[0.5cqw] text-[#f5a623]">
+              <div className="flex gap-[0.3cqw]">
+                {Array.from({ length: 5 }).map((_, i) => (
+                  <StarIcon key={i} filled={i < Math.round(ratingSummary.average)} className="size-4" />
+                ))}
+              </div>
+              <span className="text-[clamp(11px,0.85cqw,14px)] text-[#6b7078]">
+                {ratingSummary.count > 0
+                  ? `${ratingSummary.average.toFixed(1)} · ${ratingSummary.count} rating${ratingSummary.count === 1 ? "" : "s"}`
+                  : "No ratings yet"}
+              </span>
             </div>
 
             <p className="text-[clamp(18px,1.8cqw,28px)] font-medium">{formatPrice(product.price, product.currency)}</p>
@@ -109,7 +120,15 @@ export default async function ProductPage({ params }: { params: Promise<{ id: st
           </div>
         </div>
 
-        <ProductAccordion description={DESCRIPTION} brand={product.brand} material={product.material} />
+        <ProductAccordion
+          productId={product.id}
+          description={DESCRIPTION}
+          brand={product.brand}
+          material={product.material}
+          reviews={reviews}
+          ratingAverage={ratingSummary.average}
+          ratingCount={ratingSummary.count}
+        />
         <ExploreOthers products={otherProducts} />
       </Panel>
     </main>

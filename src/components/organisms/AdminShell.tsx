@@ -71,7 +71,7 @@ type Props = {
 export function AdminShell({ userEmail, notifications, signOutAction, children }: Props) {
   const [collapsed, setCollapsed] = useState(false);
   const pathname = usePathname();
-  const title = PAGE_TITLES[pathname] ?? "Admin";
+  const title = PAGE_TITLES[pathname] ?? (pathname.endsWith("/edit") ? "Edit Product" : "Admin");
   const initial = (userEmail[0] ?? "A").toUpperCase();
 
   return (

@@ -35,6 +35,7 @@ export default async function AdminProductsPage() {
                   <th className="px-5 py-3 font-medium">Season</th>
                   <th className="px-5 py-3 font-medium">New</th>
                   <th className="px-5 py-3 text-right font-medium">Price</th>
+                  <th className="px-5 py-3 text-right font-medium">Actions</th>
                 </tr>
               </thead>
               <tbody>
@@ -53,6 +54,9 @@ export default async function AdminProductsPage() {
                     <td className="px-5 py-3">{p.season}</td>
                     <td className="px-5 py-3">{p.isNewArrival && isRecentlyAdded(p.createdAt) ? "Yes" : "—"}</td>
                     <td className="px-5 py-3 text-right font-medium">{formatPrice(p.price, p.currency)}</td>
+                    <td className="px-5 py-3 text-right">
+                      <Link href={`/admin/products/${p.id}/edit`} className="underline hover:text-[#6b7078]">Edit</Link>
+                    </td>
                   </tr>
                 ))}
               </tbody>

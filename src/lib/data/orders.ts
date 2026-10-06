@@ -65,3 +65,45 @@ export async function getMyOrders(): Promise<OrderSummary[]> {
     itemCount: o.order_items.reduce((n, i) => n + i.quantity, 0),
   }));
 }
+
+export type MyOrderItem = { id: string; name: string; price: number; quantity: number; productId: string | null; imageUrl: string | null };
+export type MyOrder = { id: string; total: number; currency: string; status: string; createdAt: string; items: MyOrderItem[] };
+
+type MyOrderRow = {
+  id: string;
+  total: number | string;
+  currency: string;
+  status: string;
+  created_at: string;
+  order_items: { id: string; name: string; price: number | string; quantity: number; product_id: string | null; products: { image_url: string } | null }[];
+};
+
+/** Full order history with per-item product thumbnails, for the account page's order cards. */
+export async function getMyOrdersWithItems(): Promise<MyOrder[]> {
+  const supabase = await createSupabaseServerClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return [];
+
+  const { data } = await supabase
+    .from("orders")
+    .select("id, total, currency, status, created_at, order_items(id, name, price, quantity, product_id, products(image_url))")
+    .eq("user_id", user.id)
+    .order("created_at", { ascending: false })
+    .returns<MyOrderRow[]>();
+
+  return (data ?? []).map((o) => ({
+    id: o.id,
+    total: Number(o.total),
+    currency: o.currency,
+    status: o.status,
+    createdAt: o.created_at,
+    items: o.order_items.map((i) => ({
+      id: i.id,
+      name: i.name,
+      price: Number(i.price),
+      quantity: i.quantity,
+      productId: i.product_id,
+      imageUrl: i.products?.image_url ?? null,
+    })),
+  }));
+}

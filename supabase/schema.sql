@@ -113,6 +113,12 @@ drop policy if exists "admin insert products" on public.products;
 create policy "admin insert products" on public.products for insert to authenticated
   with check (exists (select 1 from public.admins a where a.user_id = auth.uid()));
 
+-- Only an admin can edit an existing product.
+drop policy if exists "admin update products" on public.products;
+create policy "admin update products" on public.products for update to authenticated
+  using (exists (select 1 from public.admins a where a.user_id = auth.uid()))
+  with check (exists (select 1 from public.admins a where a.user_id = auth.uid()));
+
 -- Storage bucket for product photos uploaded from the admin "Add Product" form.
 -- Public bucket: anyone can view the images (needed for next/image + the storefront),
 -- but only an admin can upload into it.
@@ -323,3 +329,24 @@ create policy "admin insert materials" on public.materials for insert to authent
 drop policy if exists "admin delete materials" on public.materials;
 create policy "admin delete materials" on public.materials for delete to authenticated
   using (exists (select 1 from public.admins a where a.user_id = auth.uid()));
+
+-- ─────────────────────────────────────────────────────────────
+-- Product reviews — no account required, same pattern as likes:
+-- anyone can read and write, so "Write a review" actually works.
+-- ─────────────────────────────────────────────────────────────
+create table if not exists public.reviews (
+  id         uuid primary key default gen_random_uuid(),
+  product_id uuid not null references public.products(id) on delete cascade,
+  name       text not null,
+  rating     int not null check (rating between 1 and 5),
+  comment    text not null,
+  created_at timestamptz not null default now()
+);
+
+alter table public.reviews enable row level security;
+
+drop policy if exists "public read reviews" on public.reviews;
+create policy "public read reviews" on public.reviews for select to anon, authenticated using (true);
+
+drop policy if exists "public insert reviews" on public.reviews;
+create policy "public insert reviews" on public.reviews for insert to anon, authenticated with check (true);

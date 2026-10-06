@@ -32,9 +32,9 @@ export function SiteFooter() {
       <div className="relative z-10 flex flex-wrap items-center justify-between gap-[0.8cqw] border-t border-[#2a2a2a] pt-[1.4cqw] pb-[1.8cqw] text-[clamp(10px,0.8cqw,13px)] text-[#7d8189]">
         <span>© 2026 VEXO. All rights reserved.</span>
         <nav aria-label="Legal" className="flex gap-[2.2cqw]">
-          <Link href="#" className="transition-colors hover:text-[#e9ebed] hover:underline underline-offset-4">Privacy</Link>
-          <Link href="#" className="transition-colors hover:text-[#e9ebed] hover:underline underline-offset-4">Terms</Link>
-          <Link href="#" className="transition-colors hover:text-[#e9ebed] hover:underline underline-offset-4">Cookies</Link>
+          <Link href="/privacy" className="transition-colors hover:text-[#e9ebed] hover:underline underline-offset-4">Privacy</Link>
+          <Link href="/terms" className="transition-colors hover:text-[#e9ebed] hover:underline underline-offset-4">Terms</Link>
+          <Link href="/cookies" className="transition-colors hover:text-[#e9ebed] hover:underline underline-offset-4">Cookies</Link>
         </nav>
         <a
           href="https://inspiringwave.in/"

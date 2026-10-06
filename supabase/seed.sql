@@ -25,7 +25,10 @@ insert into public.products (name, price, season, category, collection, brand, m
   ('ASRV x Equinox Tailored Suit', 176, 'Winter', 'women',  'Women Originals', 'ASRV x Equinox', 'Merino Wool',       '/images/arrival-13.png', 13);
 
 -- Catalog reference data (admin-managed master lists).
-insert into public.categories (name, sort) values ('Men', 1), ('Women', 2), ('Unisex', 3) on conflict (name) do nothing;
+-- Lowercase to match the products.category check constraint (men/women/unisex) exactly —
+-- clears out any capitalized rows from an earlier run of this file first.
+delete from public.categories where name in ('Men', 'Women', 'Unisex');
+insert into public.categories (name, sort) values ('men', 1), ('women', 2), ('unisex', 3) on conflict (name) do nothing;
 
 insert into public.brands (name, sort) values
   ('ASRV x Equinox', 1), ('VEXO Originals', 2), ('VEXO Essentials', 3), ('VEXO Performance Lab', 4)
