@@ -51,7 +51,7 @@ export function OrderCard({ order }: { order: MyOrder }) {
             <div key={item.id} className="flex flex-col gap-4 py-4 first:pt-0 last:pb-0 sm:flex-row sm:items-start">
               <div className="relative size-20 shrink-0 overflow-hidden rounded-[8px] border border-[#eceef0] bg-panel">
                 {item.imageUrl ? (
-                  <Image src={item.imageUrl} alt={item.name} fill sizes="80px" className="object-cover" />
+                  <Image src={item.imageUrl} alt={item.name} fill sizes="80px" className="object-cover object-top" />
                 ) : (
                   <span className="grid size-full place-items-center text-[#b9bec4]">
                     <BagIcon className="size-7" />
