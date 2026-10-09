@@ -4,9 +4,10 @@ import { Text } from "@/components/atoms/Text";
 import { AnimatedHeading } from "@/components/atoms/AnimatedHeading";
 import { SiteHeaderBar } from "@/components/organisms/SiteHeaderBar";
 import { SiteFooter } from "@/components/organisms/SiteFooter";
+import { FREE_SHIPPING_THRESHOLD } from "@/lib/utils";
 
 const OPTIONS = [
-  { name: "Standard", time: "5–7 business days", price: "$6.00", note: "Free on orders over $120" },
+  { name: "Standard", time: "5–7 business days", price: "$6.00", note: `Free on orders over $${FREE_SHIPPING_THRESHOLD}` },
   { name: "Express", time: "2–3 business days", price: "$14.00", note: "Order by 2pm EST to ship same day" },
   { name: "Overnight", time: "1 business day", price: "$28.00", note: "Available for US addresses only" },
   { name: "International", time: "7–14 business days", price: "$24.00", note: "Duties and taxes calculated at checkout" },

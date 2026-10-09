@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { cn } from "@/lib/utils";
+import { cn, FREE_SHIPPING_THRESHOLD } from "@/lib/utils";
 import type { ProductCategory } from "@/lib/types";
 import type { ProductSort } from "@/lib/data/queries";
 
@@ -69,7 +69,7 @@ export function ShopFilters(props: Props) {
       </div>
 
       <div className="mt-auto rounded-[1cqw] bg-panel p-[1.2cqw] text-[clamp(10px,0.82cqw,13px)] text-[#6b7078]">
-        Free shipping on all orders over $100.
+        Free shipping on all orders over ${FREE_SHIPPING_THRESHOLD}.
       </div>
     </aside>
   );

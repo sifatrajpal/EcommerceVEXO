@@ -5,6 +5,10 @@ import { AnimatedHeading } from "@/components/atoms/AnimatedHeading";
 import { Button } from "@/components/atoms/Button";
 import { SiteHeaderBar } from "@/components/organisms/SiteHeaderBar";
 import { SiteFooter } from "@/components/organisms/SiteFooter";
+import { ReturnRequestForm } from "@/components/molecules/ReturnRequestForm";
+import { getOrderById } from "@/lib/data/orders";
+import { getReturnRequestForOrder } from "@/lib/data/returns";
+import { formatPrice } from "@/lib/utils";
 
 const STEPS = [
   { step: "01", title: "Start your return", text: "Go to your account's order history and select the item you'd like to return, within 30 days of delivery." },
@@ -13,7 +17,12 @@ const STEPS = [
   { step: "04", title: "Get refunded", text: "Once it arrives at our warehouse, your refund is issued to the original payment method within 3–5 days." },
 ];
 
-export default function ReturnsPage() {
+export default async function ReturnsPage({ searchParams }: { searchParams: Promise<{ orderId?: string }> }) {
+  const { orderId } = await searchParams;
+  // getOrderById is RLS-scoped to the order's owner (or an admin) — a stray/foreign id just resolves to null.
+  const order = orderId ? await getOrderById(orderId) : null;
+  const existingRequest = order ? await getReturnRequestForOrder(order.id) : null;
+
   return (
     <main className="grid gap-2.5 p-2.5">
       <SiteHeaderBar />
@@ -25,6 +34,22 @@ export default function ReturnsPage() {
           Not the right fit? You have 30 days from delivery to send it back for a full refund or exchange — free on
           every domestic order.
         </Text>
+
+        {order && (
+          <div className="mt-[2cqw] rounded-[1.1cqw] bg-panel p-[1.8cqw]">
+            <p className="text-[clamp(12px,1cqw,16px)] font-medium">
+              Return order #{order.id.slice(0, 8).toUpperCase()} <span className="text-[#8e939a]">· {formatPrice(order.total, order.currency)}</span>
+            </p>
+            {existingRequest ? (
+              <p className="mt-[0.8cqw] text-[clamp(12px,0.9cqw,14px)] text-[#6b7078]">
+                Return request submitted on {new Date(existingRequest.createdAt).toLocaleDateString()} — status:{" "}
+                <span className="font-medium capitalize text-ink">{existingRequest.status}</span>.
+              </p>
+            ) : (
+              <ReturnRequestForm orderId={order.id} />
+            )}
+          </div>
+        )}
 
         <div className="mt-[2.8cqw] grid gap-[1.6cqw] md:grid-cols-4">
           {STEPS.map((s) => (

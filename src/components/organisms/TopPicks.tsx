@@ -18,7 +18,7 @@ export function TopPicks() {
         </Text>
       </div>
 
-      <div className="grid grid-cols-[1fr_1.5fr_1fr] items-start gap-[3.2cqw]">
+      <div className="grid grid-cols-1 items-start gap-[3.2cqw] md:grid-cols-[1fr_1.5fr_1fr]">
         <div className="flex flex-col gap-[1.2cqw] animate-float">
           <RevealImage
             src="/images/arrival-6.png"

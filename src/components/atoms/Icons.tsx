@@ -134,6 +134,13 @@ export const LayersIcon = (p: SVGProps<SVGSVGElement>) => (
     <path d="M12 2 2 8l10 6 10-6-10-6z" /><path d="M2 14l10 6 10-6" /><path d="M2 11l10 6 10-6" />
   </svg>
 );
+export const PercentIcon = (p: SVGProps<SVGSVGElement>) => (
+  <svg {...base} stroke="currentColor" {...p}>
+    <path d="M19 5 5 19" />
+    <circle cx="7" cy="7" r="2.5" />
+    <circle cx="17" cy="17" r="2.5" />
+  </svg>
+);
 export const ReceiptIcon = (p: SVGProps<SVGSVGElement>) => (
   <svg {...base} stroke="currentColor" {...p}>
     <path d="M6 2h12v19l-2.5-1.5L13 21l-2.5-1.5L8 21l-2-1.5V2z" />

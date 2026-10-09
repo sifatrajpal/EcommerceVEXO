@@ -29,7 +29,7 @@ export function Hero() {
       <AnimatedHeading
         as="h1"
         lines={["GEAR UP EVERY SEASON", [{ text: "EVERY " }, { text: "WORKOUT", tone: "stripe" }, { text: "!" }]]}
-        className="relative z-20 mt-[5.2cqw] text-center text-[5.1cqw] leading-[0.95] font-medium tracking-[-0.04em]"
+        className="relative z-20 mt-[5.2cqw] text-center text-[clamp(28px,5.1cqw,64px)] leading-[0.95] font-medium tracking-[-0.04em]"
         baseDelay={1.2}
       />
 

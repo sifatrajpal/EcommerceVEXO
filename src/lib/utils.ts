@@ -16,6 +16,9 @@ export function formatPrice(value: number, currency = "USD") {
 /** Flat delivery fee added at checkout — shared between the cart display and the order total. */
 export const DELIVERY_FEE = 12;
 
+/** Orders at or above this subtotal ship free — the single source of truth for every "free shipping" mention. */
+export const FREE_SHIPPING_THRESHOLD = 120;
+
 /** Below this many units, the storefront shows a "only N left" warning on that color/size. */
 export const LOW_STOCK_THRESHOLD = 15;
 

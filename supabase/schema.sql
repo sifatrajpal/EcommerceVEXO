@@ -147,6 +147,11 @@ create table if not exists public.orders (
   created_at timestamptz not null default now()
 );
 
+-- Coupon code + discount amount applied at checkout, if any — recorded on the
+-- order so the receipt and admin view reflect what was actually charged.
+alter table public.orders add column if not exists coupon_code text;
+alter table public.orders add column if not exists discount numeric(10,2) not null default 0;
+
 create table if not exists public.order_items (
   id          uuid primary key default gen_random_uuid(),
   order_id    uuid not null references public.orders(id) on delete cascade,
@@ -167,6 +172,12 @@ create policy "own or admin read orders" on public.orders for select to authenti
 drop policy if exists "own insert orders" on public.orders;
 create policy "own insert orders" on public.orders for insert to authenticated
   with check (user_id = auth.uid());
+
+-- Only an admin can change an order's status (e.g. placed → fulfilled).
+drop policy if exists "admin update orders" on public.orders;
+create policy "admin update orders" on public.orders for update to authenticated
+  using (exists (select 1 from public.admins a where a.user_id = auth.uid()))
+  with check (exists (select 1 from public.admins a where a.user_id = auth.uid()));
 
 drop policy if exists "own or admin read order_items" on public.order_items;
 create policy "own or admin read order_items" on public.order_items for select to authenticated
@@ -416,5 +427,64 @@ drop policy if exists "public read product_variants" on public.product_variants;
 create policy "public read product_variants" on public.product_variants for select to anon, authenticated using (true);
 drop policy if exists "admin write product_variants" on public.product_variants;
 create policy "admin write product_variants" on public.product_variants for all to authenticated
+  using (exists (select 1 from public.admins a where a.user_id = auth.uid()))
+  with check (exists (select 1 from public.admins a where a.user_id = auth.uid()));
+
+-- ─────────────────────────────────────────────────────────────
+-- Return requests — a customer starts one from their order history;
+-- one request per order in this simplified flow (no partial/item-level
+-- returns). An admin would process it from the order's status.
+-- ─────────────────────────────────────────────────────────────
+create table if not exists public.return_requests (
+  id         uuid primary key default gen_random_uuid(),
+  order_id   uuid not null references public.orders(id) on delete cascade,
+  user_id    uuid not null references auth.users(id) on delete cascade,
+  reason     text not null,
+  status     text not null default 'requested' check (status in ('requested', 'approved', 'rejected', 'completed')),
+  created_at timestamptz not null default now(),
+  unique (order_id)
+);
+
+alter table public.return_requests enable row level security;
+
+drop policy if exists "own or admin read return_requests" on public.return_requests;
+create policy "own or admin read return_requests" on public.return_requests for select to authenticated
+  using (user_id = auth.uid() or exists (select 1 from public.admins a where a.user_id = auth.uid()));
+
+drop policy if exists "own insert return_requests" on public.return_requests;
+create policy "own insert return_requests" on public.return_requests for insert to authenticated
+  with check (user_id = auth.uid());
+
+drop policy if exists "admin update return_requests" on public.return_requests;
+create policy "admin update return_requests" on public.return_requests for update to authenticated
+  using (exists (select 1 from public.admins a where a.user_id = auth.uid()))
+  with check (exists (select 1 from public.admins a where a.user_id = auth.uid()));
+
+-- ─────────────────────────────────────────────────────────────
+-- Coupons — admin-managed codes applied at checkout. Active coupons are
+-- publicly readable so the cart can validate a code a customer types in;
+-- only an admin can create/edit/delete them.
+-- ─────────────────────────────────────────────────────────────
+create table if not exists public.coupons (
+  id             uuid primary key default gen_random_uuid(),
+  code           text not null unique,
+  discount_type  text not null check (discount_type in ('percent', 'flat')),
+  discount_value numeric(10,2) not null check (discount_value > 0),
+  active         boolean not null default true,
+  expires_at     timestamptz,
+  created_at     timestamptz not null default now()
+);
+
+alter table public.coupons enable row level security;
+
+drop policy if exists "public read active coupons" on public.coupons;
+create policy "public read active coupons" on public.coupons for select to anon, authenticated using (active = true);
+
+drop policy if exists "admin read all coupons" on public.coupons;
+create policy "admin read all coupons" on public.coupons for select to authenticated
+  using (exists (select 1 from public.admins a where a.user_id = auth.uid()));
+
+drop policy if exists "admin write coupons" on public.coupons;
+create policy "admin write coupons" on public.coupons for all to authenticated
   using (exists (select 1 from public.admins a where a.user_id = auth.uid()))
   with check (exists (select 1 from public.admins a where a.user_id = auth.uid()));

@@ -17,6 +17,7 @@ import {
   RulerIcon,
   PaletteIcon,
   LayersIcon,
+  PercentIcon,
 } from "@/components/atoms/Icons";
 
 type IconType = ComponentType<SVGProps<SVGSVGElement>>;
@@ -30,6 +31,7 @@ const NAV_GROUPS: NavGroup[] = [
     items: [
       { href: "/admin/orders", label: "Orders", icon: BagIcon },
       { href: "/admin/invoices", label: "Invoices", icon: ReceiptIcon },
+      { href: "/admin/coupons", label: "Coupons", icon: PercentIcon },
     ],
   },
   {
@@ -51,6 +53,7 @@ const PAGE_TITLES: Record<string, string> = {
   "/admin": "Dashboard",
   "/admin/orders": "Orders",
   "/admin/invoices": "Invoices",
+  "/admin/coupons": "Coupons",
   "/admin/products": "Products",
   "/admin/products/new": "Add Product",
   "/admin/categories": "Categories",

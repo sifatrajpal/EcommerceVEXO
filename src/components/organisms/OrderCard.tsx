@@ -93,7 +93,7 @@ export function OrderCard({ order }: { order: MyOrder }) {
                   Track package
                 </Link>
                 <Link
-                  href="/returns"
+                  href={`/returns?orderId=${order.id}`}
                   className="rounded-full border border-[#d8dade] px-4 py-2 text-center text-[14px] font-medium transition-colors hover:border-ink"
                 >
                   Return items

@@ -61,7 +61,7 @@ export function PosterFeature() {
         </div>
 
         {LABELS.map((l) => (
-          <p key={l.text[0]} className={`absolute z-20 text-[0.78cqw] leading-[1.15] text-white ${l.className}`}>
+          <p key={l.text[0]} className={`absolute z-20 text-[clamp(9px,0.78cqw,13px)] leading-[1.15] text-white ${l.className}`}>
             {l.text[0]}<br />{l.text[1]}
           </p>
         ))}

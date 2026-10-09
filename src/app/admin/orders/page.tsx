@@ -1,12 +1,7 @@
 import Link from "next/link";
 import { getAllOrders } from "@/lib/data/admin-stats";
+import { OrderStatusSelect } from "@/components/molecules/OrderStatusSelect";
 import { formatPrice } from "@/lib/utils";
-
-const STATUS_STYLES: Record<string, string> = {
-  placed: "bg-[#fff4e0] text-[#9a6b00]",
-  fulfilled: "bg-[#e3f6e8] text-[#1f7a3d]",
-  cancelled: "bg-[#fde8e8] text-[#b42318]",
-};
 
 export default async function AdminOrdersPage() {
   const orders = await getAllOrders();
@@ -43,9 +38,7 @@ export default async function AdminOrdersPage() {
                     <td className="px-5 py-3">{o.itemCount}</td>
                     <td className="px-5 py-3 text-[#8e939a]">{new Date(o.createdAt).toLocaleDateString()}</td>
                     <td className="px-5 py-3">
-                      <span className={`inline-block rounded-full px-2.5 py-1 text-[12px] font-medium capitalize ${STATUS_STYLES[o.status] ?? "bg-panel text-ink"}`}>
-                        {o.status}
-                      </span>
+                      <OrderStatusSelect orderId={o.id} status={o.status} />
                     </td>
                     <td className="px-5 py-3 text-right font-medium">{formatPrice(o.total, o.currency)}</td>
                     <td className="px-5 py-3 text-right">

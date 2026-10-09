@@ -4,7 +4,6 @@ import { useActionState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { signUp, type AuthState } from "@/actions/auth";
-import { GoogleIcon, AppleIcon, XIcon } from "@/components/atoms/Icons";
 import { cn } from "@/lib/utils";
 
 const initial: AuthState = { status: "idle" };
@@ -22,23 +21,7 @@ export function SignUpForm() {
           <h1 className="text-2xl font-semibold">Create your account</h1>
           <p className="mt-1 text-sm text-[#6b7078]">Gear up for every season and rep.</p>
 
-          <div className="mt-6 grid grid-cols-3 gap-3">
-            <button type="button" aria-label="Continue with Google" className="grid place-items-center rounded-lg border border-[#d8dade] py-2.5 hover:bg-[#f6f6f4]">
-              <GoogleIcon className="size-[18px]" />
-            </button>
-            <button type="button" aria-label="Continue with Apple" className="grid place-items-center rounded-lg border border-[#d8dade] py-2.5 hover:bg-[#f6f6f4]">
-              <AppleIcon className="size-[18px]" />
-            </button>
-            <button type="button" aria-label="Continue with X" className="grid place-items-center rounded-lg border border-[#d8dade] py-2.5 hover:bg-[#f6f6f4]">
-              <XIcon className="size-[16px]" />
-            </button>
-          </div>
-
-          <div className="my-6 flex items-center gap-3 text-[13px] text-[#8e939a]">
-            <span className="h-px flex-1 bg-[#e4e5e8]" /> or <span className="h-px flex-1 bg-[#e4e5e8]" />
-          </div>
-
-          <form action={formAction} className="flex flex-col gap-4">
+          <form action={formAction} className="mt-6 flex flex-col gap-4">
             <label className="flex flex-col gap-1.5 text-[13px] font-medium">
               Email
               <input type="email" name="email" required autoComplete="email" placeholder="Enter your email" className={inputClasses} />

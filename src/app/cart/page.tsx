@@ -1,15 +1,21 @@
 import Link from "next/link";
 import Image from "next/image";
 import { redirect } from "next/navigation";
+import { cookies } from "next/headers";
+import { Panel } from "@/components/atoms/Panel";
 import { Button } from "@/components/atoms/Button";
 import { Text } from "@/components/atoms/Text";
 import { BagIcon, ArrowUpRightIcon } from "@/components/atoms/Icons";
 import { createSupabaseServerClient } from "@/lib/supabase/auth-server";
 import { getCartItems } from "@/lib/data/cart";
+import { getActiveCouponByCode } from "@/lib/data/coupons";
 import { updateCartQuantity, removeFromCart, clearCart } from "@/actions/cart";
 import { placeOrder } from "@/actions/checkout";
+import { removeCoupon } from "@/actions/coupons";
+import { CouponForm } from "@/components/molecules/CouponForm";
 import { SiteHeaderBar } from "@/components/organisms/SiteHeaderBar";
-import { formatPrice, DELIVERY_FEE } from "@/lib/utils";
+import { computeDiscount, COUPON_COOKIE } from "@/lib/pricing";
+import { formatPrice, DELIVERY_FEE, FREE_SHIPPING_THRESHOLD } from "@/lib/utils";
 
 export default async function CartPage() {
   const supabase = await createSupabaseServerClient();
@@ -19,13 +25,20 @@ export default async function CartPage() {
   const items = await getCartItems();
   const itemCount = items.reduce((n, item) => n + item.quantity, 0);
   const subtotal = items.reduce((sum, item) => sum + item.product.price * item.quantity, 0);
-  const fee = items.length > 0 ? DELIVERY_FEE : 0;
+  const fee = items.length === 0 ? 0 : subtotal >= FREE_SHIPPING_THRESHOLD ? 0 : DELIVERY_FEE;
   const currency = items[0]?.product.currency ?? "USD";
+  const amountToFreeShipping = Math.max(0, FREE_SHIPPING_THRESHOLD - subtotal);
+
+  const jar = await cookies();
+  const couponCode = jar.get(COUPON_COOKIE)?.value ?? null;
+  const coupon = couponCode ? await getActiveCouponByCode(couponCode) : null;
+  const discount = coupon ? computeDiscount(subtotal, coupon) : 0;
+  const total = Math.max(0, subtotal + fee - discount);
 
   return (
     <main className="grid min-h-screen gap-2.5 bg-frame p-2.5">
       <SiteHeaderBar />
-      <div className="mx-auto max-w-[1100px] rounded-[22px] bg-panel px-6 py-8 md:px-10 md:py-10">
+      <Panel className="px-6 py-8 md:px-10 md:py-10">
         <p className="text-[13px] text-[#8e939a]">
           <Link href="/" className="hover:text-ink">Home</Link> / <span className="text-ink">Shopping Bag</span>
         </p>
@@ -95,10 +108,22 @@ export default async function CartPage() {
                   <span>Subtotal</span><span className="text-ink">{formatPrice(subtotal, currency)}</span>
                 </div>
                 <div className="flex justify-between text-[#6b7078]">
-                  <span>Delivery Fee</span><span className="text-ink">{formatPrice(fee, currency)}</span>
+                  <span>Delivery Fee</span>
+                  <span className="text-ink">{fee === 0 ? "FREE" : formatPrice(fee, currency)}</span>
                 </div>
+                {discount > 0 && (
+                  <div className="flex justify-between text-[#6b7078]">
+                    <span>Discount {coupon && `(${coupon.code})`}</span>
+                    <span className="text-[#3aa15c]">− {formatPrice(discount, currency)}</span>
+                  </div>
+                )}
+                {amountToFreeShipping > 0 && (
+                  <p className="text-[12px] text-[#8e939a]">
+                    Add {formatPrice(amountToFreeShipping, currency)} more for free shipping.
+                  </p>
+                )}
                 <div className="mt-2 flex justify-between border-t border-[#e4e5e8] pt-3 text-[16px] font-semibold">
-                  <span>Total</span><span>{formatPrice(subtotal + fee, currency)}</span>
+                  <span>Total</span><span>{formatPrice(total, currency)}</span>
                 </div>
               </div>
 
@@ -112,27 +137,26 @@ export default async function CartPage() {
                 </button>
               </form>
 
-              <div className="mt-6 rounded-[12px] bg-panel p-4">
-                <p className="mb-2 text-[13px] font-medium">Add Coupon Code</p>
-                <input
-                  disabled
-                  placeholder="Enter Coupon Code"
-                  className="w-full rounded-md border border-[#d8dade] bg-white px-3 py-2 text-[13px] outline-none disabled:opacity-60"
-                />
-                <button
-                  type="button"
-                  disabled
-                  title="Coupons aren't built yet"
-                  className="mt-2 flex w-full items-center justify-between rounded-md bg-[#d8dade] px-3 py-2 text-[13px] font-medium text-[#6b7078] disabled:opacity-60"
-                >
-                  Apply Coupon
-                  <ArrowUpRightIcon className="size-3.5" />
-                </button>
-              </div>
+              {coupon ? (
+                <div className="mt-6 flex items-center justify-between rounded-[12px] bg-panel p-4">
+                  <div>
+                    <p className="text-[13px] font-medium">Coupon &quot;{coupon.code}&quot; applied</p>
+                    <p className="text-[12px] text-[#3aa15c]">− {formatPrice(discount, currency)}</p>
+                  </div>
+                  <form action={removeCoupon}>
+                    <button type="submit" className="text-[12px] text-[#8e939a] underline hover:text-ink">Remove</button>
+                  </form>
+                </div>
+              ) : (
+                <div className="mt-6 rounded-[12px] bg-panel p-4">
+                  <p className="mb-2 text-[13px] font-medium">Add Coupon Code</p>
+                  <CouponForm />
+                </div>
+              )}
             </aside>
           </div>
         )}
-      </div>
+      </Panel>
     </main>
   );
 }

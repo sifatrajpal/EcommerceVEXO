@@ -1,6 +1,7 @@
 "use server";
 
 import { redirect } from "next/navigation";
+import { headers } from "next/headers";
 import { createSupabaseServerClient } from "@/lib/supabase/auth-server";
 
 export type AuthState = { status: "idle" | "error"; message?: string };
@@ -47,4 +48,33 @@ export async function signOut() {
   const supabase = await createSupabaseServerClient();
   await supabase.auth.signOut();
   redirect("/");
+}
+
+/** Emails a password-reset link. Always returns the same message, whether or not the email exists, so we don't leak which emails have accounts. */
+export async function requestPasswordReset(_prev: AuthState, formData: FormData): Promise<AuthState> {
+  const email = String(formData.get("email") ?? "").trim().toLowerCase();
+  if (!EMAIL.test(email)) return { status: "error", message: "Enter a valid email address." };
+
+  const supabase = await createSupabaseServerClient();
+  const origin = (await headers()).get("origin") ?? "";
+  const { error } = await supabase.auth.resetPasswordForEmail(email, {
+    redirectTo: `${origin}/auth/confirm?next=/reset-password&type=recovery`,
+  });
+  if (error) console.error("[requestPasswordReset]", error.message);
+
+  return { status: "idle", message: "If an account exists for that email, a reset link is on its way." };
+}
+
+/** Sets a new password for the recovery session created by clicking the emailed reset link. */
+export async function updatePassword(_prev: AuthState, formData: FormData): Promise<AuthState> {
+  const password = String(formData.get("password") ?? "");
+  const confirmPassword = String(formData.get("confirmPassword") ?? "");
+  if (password.length < 8) return { status: "error", message: "Password must be at least 8 characters." };
+  if (password !== confirmPassword) return { status: "error", message: "Passwords don't match." };
+
+  const supabase = await createSupabaseServerClient();
+  const { error } = await supabase.auth.updateUser({ password });
+  if (error) return { status: "error", message: error.message };
+
+  redirect("/sign-in?reset=success");
 }

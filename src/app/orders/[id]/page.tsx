@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { Panel } from "@/components/atoms/Panel";
 import { Button } from "@/components/atoms/Button";
 import { SiteHeaderBar } from "@/components/organisms/SiteHeaderBar";
+import { OrderTracker } from "@/components/molecules/OrderTracker";
 import { getOrderById } from "@/lib/data/orders";
 import { formatPrice } from "@/lib/utils";
 
@@ -20,6 +21,8 @@ export default async function OrderPage({ params }: { params: Promise<{ id: stri
         <p className="mt-1 text-[13px] text-[#8e939a]">
           Confirmation #{order.id.slice(0, 8).toUpperCase()} · {new Date(order.createdAt).toLocaleDateString()}
         </p>
+
+        <OrderTracker status={order.status} />
 
         <div className="mt-6 flex flex-col divide-y divide-[#eceef0]">
           {order.items.map((item) => (
