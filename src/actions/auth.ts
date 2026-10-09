@@ -44,6 +44,29 @@ export async function signUp(_prev: AuthState, formData: FormData): Promise<Auth
   return { status: "error", message: "Check your email to confirm your account, then sign in." };
 }
 
+const OAUTH_PROVIDERS = ["google", "facebook"] as const;
+type OAuthProvider = (typeof OAUTH_PROVIDERS)[number];
+
+/** Redirects the browser to the provider's consent screen; Supabase must have that provider enabled first. */
+export async function signInWithOAuth(formData: FormData) {
+  const provider = String(formData.get("provider") ?? "");
+  if (!OAUTH_PROVIDERS.includes(provider as OAuthProvider)) redirect("/sign-in");
+
+  const supabase = await createSupabaseServerClient();
+  const origin = (await headers()).get("origin") ?? "";
+  const { data, error } = await supabase.auth.signInWithOAuth({
+    provider: provider as OAuthProvider,
+    options: { redirectTo: `${origin}/auth/callback` },
+  });
+
+  if (error || !data.url) {
+    console.error("[signInWithOAuth]", error?.message ?? "no redirect URL returned");
+    redirect("/sign-in?error=oauth-failed");
+  }
+
+  redirect(data.url);
+}
+
 export async function signOut() {
   const supabase = await createSupabaseServerClient();
   await supabase.auth.signOut();
