@@ -3,9 +3,14 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
     "build": "next build",
-    "start": "next start"
+    "dev": "next dev",
+    "start": "next start",
+    "deploy": "opennextjs-cloudflare build && opennextjs-cloudflare deploy",
+    "preview": "opennextjs-cloudflare build && opennextjs-cloudflare preview",
+    "postinstall": "patch-package",
+    "upload": "opennextjs-cloudflare build && opennextjs-cloudflare upload",
+    "cf-typegen": "wrangler types --env-interface CloudflareEnv cloudflare-env.d.ts"
   },
   "dependencies": {
     "@supabase/ssr": "^0.12.7",
@@ -16,12 +21,15 @@
     "server-only": "^0.0.1"
   },
   "devDependencies": {
+    "@opennextjs/cloudflare": "1.20.9",
     "@tailwindcss/postcss": "^4.3.3",
     "@types/node": "^22",
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",
+    "patch-package": "^8.0.1",
     "postcss": "^8.5.28",
     "tailwindcss": "^4.3.3",
-    "typescript": "^5"
+    "typescript": "^5",
+    "wrangler": "^4.149.0"
   }
 }
