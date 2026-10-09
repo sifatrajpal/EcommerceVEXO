@@ -1,9 +1,6 @@
-const STEPS = [
-  { key: "placed", label: "Order Placed" },
-  { key: "fulfilled", label: "Delivered" },
-];
+import { ORDER_TRACKER_STEPS } from "@/lib/orderStatus";
 
-/** A simple two-step progress tracker driven by the order's real status. */
+/** A progress tracker driven by the order's real status: placed → confirmed → processing → shipped → delivered. */
 export function OrderTracker({ status }: { status: string }) {
   if (status === "cancelled") {
     return (
@@ -13,13 +10,13 @@ export function OrderTracker({ status }: { status: string }) {
     );
   }
 
-  const activeIndex = status === "fulfilled" ? 1 : 0;
+  const activeIndex = Math.max(0, ORDER_TRACKER_STEPS.findIndex((s) => s.key === status));
 
   return (
-    <div className="mt-6 flex items-center gap-2">
-      {STEPS.map((step, i) => (
-        <div key={step.key} className="flex flex-1 items-center gap-2 last:flex-none">
-          <div className="flex flex-col items-center gap-1.5">
+    <div className="mt-6 flex items-start gap-1">
+      {ORDER_TRACKER_STEPS.map((step, i) => (
+        <div key={step.key} className="flex flex-1 items-center gap-1 last:flex-none">
+          <div className="flex w-14 flex-col items-center gap-1.5 text-center">
             <span
               className={`grid size-6 shrink-0 place-items-center rounded-full text-[11px] font-semibold ${
                 i <= activeIndex ? "bg-[#141414] text-white" : "bg-[#eceef0] text-[#8e939a]"
@@ -27,11 +24,13 @@ export function OrderTracker({ status }: { status: string }) {
             >
               {i + 1}
             </span>
-            <span className={`whitespace-nowrap text-[11px] font-medium ${i <= activeIndex ? "text-ink" : "text-[#8e939a]"}`}>
+            <span className={`text-[11px] leading-tight font-medium ${i <= activeIndex ? "text-ink" : "text-[#8e939a]"}`}>
               {step.label}
             </span>
           </div>
-          {i < STEPS.length - 1 && <span className={`h-px flex-1 ${i < activeIndex ? "bg-[#141414]" : "bg-[#eceef0]"}`} />}
+          {i < ORDER_TRACKER_STEPS.length - 1 && (
+            <span className={`mt-[-18px] h-px flex-1 ${i < activeIndex ? "bg-[#141414]" : "bg-[#eceef0]"}`} />
+          )}
         </div>
       ))}
     </div>

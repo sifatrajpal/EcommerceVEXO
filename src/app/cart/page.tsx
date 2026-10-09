@@ -17,7 +17,11 @@ import { SiteHeaderBar } from "@/components/organisms/SiteHeaderBar";
 import { computeDiscount, COUPON_COOKIE } from "@/lib/pricing";
 import { formatPrice, DELIVERY_FEE, FREE_SHIPPING_THRESHOLD } from "@/lib/utils";
 
-export default async function CartPage() {
+const addressInputClasses =
+  "w-full rounded-md border border-[#d8dade] bg-white px-3 py-2 text-[13px] outline-none focus:border-ink";
+
+export default async function CartPage({ searchParams }: { searchParams: Promise<{ error?: string }> }) {
+  const { error } = await searchParams;
   const supabase = await createSupabaseServerClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect("/sign-in");
@@ -127,10 +131,23 @@ export default async function CartPage() {
                 </div>
               </div>
 
-              <form action={placeOrder}>
+              <form action={placeOrder} className="mt-5 flex flex-col gap-2.5 border-t border-[#e4e5e8] pt-5">
+                <p className="text-[13px] font-semibold">Shipping Address</p>
+                {error === "missing-address" && (
+                  <p className="text-[12px] text-[#c23434]">Fill in your shipping address to place the order.</p>
+                )}
+                <input name="shippingName" required placeholder="Full name" className={addressInputClasses} />
+                <input name="shippingPhone" placeholder="Phone (optional)" className={addressInputClasses} />
+                <input name="shippingAddress" required placeholder="Street address" className={addressInputClasses} />
+                <div className="grid grid-cols-3 gap-2">
+                  <input name="shippingCity" required placeholder="City" className={addressInputClasses} />
+                  <input name="shippingState" required placeholder="State" className={addressInputClasses} />
+                  <input name="shippingZip" required placeholder="ZIP" className={addressInputClasses} />
+                </div>
+
                 <button
                   type="submit"
-                  className="mt-5 flex w-full items-center justify-between rounded-lg bg-[#141414] px-4 py-3 text-[14px] font-medium text-white transition-transform hover:-translate-y-0.5"
+                  className="mt-2.5 flex w-full items-center justify-between rounded-lg bg-[#141414] px-4 py-3 text-[14px] font-medium text-white transition-transform hover:-translate-y-0.5"
                 >
                   Make Payment
                   <ArrowUpRightIcon className="size-4" />

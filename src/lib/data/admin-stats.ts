@@ -1,5 +1,6 @@
 import "server-only";
 import { createSupabaseServerClient } from "@/lib/supabase/auth-server";
+import { ORDER_STATUSES } from "@/lib/orderStatus";
 
 /**
  * Every query in this file relies on RLS ("... or exists (select 1 from admins ...)")
@@ -121,7 +122,6 @@ export async function getRevenueTrend(days = 30): Promise<RevenueTrendPoint[]> {
 }
 
 export type OrderStatusCount = { status: string; count: number };
-const ORDER_STATUSES = ["placed", "fulfilled", "cancelled"] as const;
 
 export async function getOrdersByStatus(): Promise<OrderStatusCount[]> {
   const supabase = await createSupabaseServerClient();

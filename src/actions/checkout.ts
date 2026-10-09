@@ -12,10 +12,20 @@ import { DELIVERY_FEE, FREE_SHIPPING_THRESHOLD } from "@/lib/utils";
  * Records the current cart as a placed order (no real payment gateway — this
  * is a checkout stand-in, not card processing). Clears the cart on success.
  */
-export async function placeOrder() {
+export async function placeOrder(formData: FormData) {
   const supabase = await createSupabaseServerClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect("/sign-in");
+
+  const shippingName = String(formData.get("shippingName") ?? "").trim();
+  const shippingPhone = String(formData.get("shippingPhone") ?? "").trim();
+  const shippingAddress = String(formData.get("shippingAddress") ?? "").trim();
+  const shippingCity = String(formData.get("shippingCity") ?? "").trim();
+  const shippingState = String(formData.get("shippingState") ?? "").trim();
+  const shippingZip = String(formData.get("shippingZip") ?? "").trim();
+  if (!shippingName || !shippingAddress || !shippingCity || !shippingState || !shippingZip) {
+    redirect("/cart?error=missing-address");
+  }
 
   const { data: items, error: cartError } = await supabase
     .from("cart_items")
@@ -39,7 +49,19 @@ export async function placeOrder() {
 
   const { data: order, error: orderError } = await supabase
     .from("orders")
-    .insert({ user_id: user.id, user_email: user.email, total, coupon_code: coupon?.code ?? null, discount })
+    .insert({
+      user_id: user.id,
+      user_email: user.email,
+      total,
+      coupon_code: coupon?.code ?? null,
+      discount,
+      shipping_name: shippingName,
+      shipping_phone: shippingPhone || null,
+      shipping_address: shippingAddress,
+      shipping_city: shippingCity,
+      shipping_state: shippingState,
+      shipping_zip: shippingZip,
+    })
     .select("id")
     .single();
 

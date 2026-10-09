@@ -23,6 +23,14 @@ export function SignUpForm() {
 
           <form action={formAction} className="mt-6 flex flex-col gap-4">
             <label className="flex flex-col gap-1.5 text-[13px] font-medium">
+              Name
+              <input type="text" name="name" required autoComplete="name" placeholder="Enter your name" className={inputClasses} />
+            </label>
+            <label className="flex flex-col gap-1.5 text-[13px] font-medium">
+              <span>Phone number <span className="font-normal text-[#8e939a]">(optional)</span></span>
+              <input type="tel" name="phone" autoComplete="tel" placeholder="Enter your phone number" className={inputClasses} />
+            </label>
+            <label className="flex flex-col gap-1.5 text-[13px] font-medium">
               Email
               <input type="email" name="email" required autoComplete="email" placeholder="Enter your email" className={inputClasses} />
             </label>
@@ -31,7 +39,7 @@ export function SignUpForm() {
               <input type="password" name="password" required autoComplete="new-password" placeholder="At least 8 characters" className={inputClasses} />
             </label>
             <label className="flex flex-col gap-1.5 text-[13px] font-medium">
-              Confirm password
+              Repeat password
               <input type="password" name="confirmPassword" required autoComplete="new-password" placeholder="••••••••" className={inputClasses} />
             </label>
 

@@ -4,8 +4,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { createSupabaseServerClient } from "@/lib/supabase/auth-server";
 import { isCurrentUserAdmin } from "@/lib/admin";
-
-const STATUSES = ["placed", "fulfilled", "cancelled"] as const;
+import { ORDER_STATUSES, type OrderStatus } from "@/lib/orderStatus";
 
 /** Admin-only: changes an order's status from the dropdown on /admin/orders. */
 export async function updateOrderStatus(formData: FormData): Promise<void> {
@@ -16,7 +15,7 @@ export async function updateOrderStatus(formData: FormData): Promise<void> {
 
   const orderId = String(formData.get("orderId") ?? "");
   const status = String(formData.get("status") ?? "");
-  if (!orderId || !STATUSES.includes(status as (typeof STATUSES)[number])) return;
+  if (!orderId || !ORDER_STATUSES.includes(status as OrderStatus)) return;
 
   const { error } = await supabase.from("orders").update({ status }).eq("id", orderId);
   if (error) console.error("[updateOrderStatus]", error.message);

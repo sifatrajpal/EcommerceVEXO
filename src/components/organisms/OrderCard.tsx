@@ -3,13 +3,8 @@ import Link from "next/link";
 import { BagIcon } from "@/components/atoms/Icons";
 import { BuyItAgainButton } from "@/components/molecules/BuyItAgainButton";
 import { formatPrice } from "@/lib/utils";
+import { ORDER_STATUS_COPY } from "@/lib/orderStatus";
 import type { MyOrder } from "@/lib/data/orders";
-
-const STATUS_COPY: Record<string, { label: string; sub: string }> = {
-  placed: { label: "Order placed", sub: "We're preparing your order." },
-  fulfilled: { label: "Delivered", sub: "Your package was delivered." },
-  cancelled: { label: "Order cancelled", sub: "This order was cancelled." },
-};
 
 const RETURN_WINDOW_DAYS = 30;
 
@@ -17,7 +12,7 @@ export function OrderCard({ order }: { order: MyOrder }) {
   const placedDate = new Date(order.createdAt);
   const eligibleTill = new Date(placedDate.getTime() + RETURN_WINDOW_DAYS * 24 * 60 * 60 * 1000);
   const canReturn = order.status !== "cancelled" && eligibleTill.getTime() > Date.now();
-  const status = STATUS_COPY[order.status] ?? { label: order.status, sub: "" };
+  const status = ORDER_STATUS_COPY[order.status as keyof typeof ORDER_STATUS_COPY] ?? { label: order.status, sub: "" };
 
   return (
     <div className="overflow-hidden rounded-[14px] bg-white">

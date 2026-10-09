@@ -30,12 +30,19 @@ export async function signIn(_prev: AuthState, formData: FormData): Promise<Auth
 export async function signUp(_prev: AuthState, formData: FormData): Promise<AuthState> {
   const { email, password } = readCredentials(formData);
   const confirmPassword = String(formData.get("confirmPassword") ?? "");
+  const name = String(formData.get("name") ?? "").trim();
+  const phone = String(formData.get("phone") ?? "").trim();
+  if (!name) return { status: "error", message: "Enter your name." };
   if (!EMAIL.test(email)) return { status: "error", message: "Enter a valid email address." };
   if (password.length < 8) return { status: "error", message: "Password must be at least 8 characters." };
   if (password !== confirmPassword) return { status: "error", message: "Passwords don't match." };
 
   const supabase = await createSupabaseServerClient();
-  const { data, error } = await supabase.auth.signUp({ email, password });
+  const { data, error } = await supabase.auth.signUp({
+    email,
+    password,
+    options: { data: { full_name: name, phone: phone || null } },
+  });
   if (error) return { status: "error", message: error.message };
 
   // A session means email confirmation is off (or not required) — you're in immediately.

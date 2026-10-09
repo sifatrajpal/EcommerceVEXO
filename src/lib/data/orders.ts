@@ -2,6 +2,14 @@ import "server-only";
 import { createSupabaseServerClient } from "@/lib/supabase/auth-server";
 
 export type OrderItem = { id: string; name: string; price: number; quantity: number };
+export type ShippingAddress = {
+  name: string | null;
+  phone: string | null;
+  address: string | null;
+  city: string | null;
+  state: string | null;
+  zip: string | null;
+};
 export type Order = {
   id: string;
   userEmail: string;
@@ -10,6 +18,7 @@ export type Order = {
   status: string;
   createdAt: string;
   items: OrderItem[];
+  shipping: ShippingAddress;
 };
 
 /** RLS scopes this to the order's owner or an admin — returns null otherwise. */
@@ -18,7 +27,9 @@ export async function getOrderById(id: string): Promise<Order | null> {
 
   const { data: order, error } = await supabase
     .from("orders")
-    .select("id, user_email, total, currency, status, created_at")
+    .select(
+      "id, user_email, total, currency, status, created_at, shipping_name, shipping_phone, shipping_address, shipping_city, shipping_state, shipping_zip"
+    )
     .eq("id", id)
     .maybeSingle();
 
@@ -38,6 +49,14 @@ export async function getOrderById(id: string): Promise<Order | null> {
     status: order.status,
     createdAt: order.created_at,
     items: (items ?? []).map((i) => ({ id: i.id, name: i.name, price: Number(i.price), quantity: i.quantity })),
+    shipping: {
+      name: order.shipping_name,
+      phone: order.shipping_phone,
+      address: order.shipping_address,
+      city: order.shipping_city,
+      state: order.shipping_state,
+      zip: order.shipping_zip,
+    },
   };
 }
 

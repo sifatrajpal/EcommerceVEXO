@@ -152,6 +152,23 @@ create table if not exists public.orders (
 alter table public.orders add column if not exists coupon_code text;
 alter table public.orders add column if not exists discount numeric(10,2) not null default 0;
 
+-- Shipping address, collected at checkout (Cart → Checkout → Address → Payment)
+-- and snapshotted onto the order, same rationale as the price/item snapshot below.
+alter table public.orders add column if not exists shipping_name text;
+alter table public.orders add column if not exists shipping_phone text;
+alter table public.orders add column if not exists shipping_address text;
+alter table public.orders add column if not exists shipping_city text;
+alter table public.orders add column if not exists shipping_state text;
+alter table public.orders add column if not exists shipping_zip text;
+
+-- Expand the status pipeline to match the fulfilment flow the admin actually
+-- works through: placed → confirmed → processing → shipped → delivered, with
+-- cancelled as a terminal exception. Supersedes the old 'fulfilled' value.
+update public.orders set status = 'delivered' where status = 'fulfilled';
+alter table public.orders drop constraint if exists orders_status_check;
+alter table public.orders add constraint orders_status_check
+  check (status in ('placed', 'confirmed', 'processing', 'shipped', 'delivered', 'cancelled'));
+
 create table if not exists public.order_items (
   id          uuid primary key default gen_random_uuid(),
   order_id    uuid not null references public.orders(id) on delete cascade,
