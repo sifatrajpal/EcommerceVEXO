@@ -3,17 +3,13 @@
 import { useActionState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { signUp, signInWithOAuth, type AuthState } from "@/actions/auth";
-import { GoogleIcon, FacebookIcon } from "@/components/atoms/Icons";
+import { signUp, type AuthState } from "@/actions/auth";
 import { cn } from "@/lib/utils";
 
 const initial: AuthState = { status: "idle" };
 
 const inputClasses =
   "w-full rounded-lg border border-[#d8dade] bg-white px-3.5 py-2.5 text-[15px] outline-none focus:border-ink";
-
-const oauthButtonClasses =
-  "flex items-center justify-center gap-2 rounded-lg border border-[#d8dade] py-2.5 text-[14px] font-medium hover:bg-[#f6f6f4]";
 
 export function SignUpForm() {
   const [state, formAction, pending] = useActionState(signUp, initial);
@@ -25,28 +21,7 @@ export function SignUpForm() {
           <h1 className="text-2xl font-semibold">Create your account</h1>
           <p className="mt-1 text-sm text-[#6b7078]">Gear up for every season and rep.</p>
 
-          <div className="mt-6 grid grid-cols-2 gap-3">
-            <form action={signInWithOAuth}>
-              <input type="hidden" name="provider" value="google" />
-              <button type="submit" className={oauthButtonClasses}>
-                <GoogleIcon className="size-[18px]" />
-                Google
-              </button>
-            </form>
-            <form action={signInWithOAuth}>
-              <input type="hidden" name="provider" value="facebook" />
-              <button type="submit" className={oauthButtonClasses}>
-                <FacebookIcon className="size-[18px]" />
-                Facebook
-              </button>
-            </form>
-          </div>
-
-          <div className="my-6 flex items-center gap-3 text-[13px] text-[#8e939a]">
-            <span className="h-px flex-1 bg-[#e4e5e8]" /> or <span className="h-px flex-1 bg-[#e4e5e8]" />
-          </div>
-
-          <form action={formAction} className="flex flex-col gap-4">
+          <form action={formAction} className="mt-6 flex flex-col gap-4">
             <label className="flex flex-col gap-1.5 text-[13px] font-medium">
               Email
               <input type="email" name="email" required autoComplete="email" placeholder="Enter your email" className={inputClasses} />
