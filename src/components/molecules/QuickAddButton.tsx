@@ -29,7 +29,7 @@ export function QuickAddButton({ productId, className }: { productId: string; cl
         disabled={pending}
         aria-label="Add to bag"
         className={cn(
-          "grid size-full place-items-center rounded-full bg-white transition-transform active:scale-90 disabled:opacity-60",
+          "grid size-full place-items-center rounded-full bg-white text-[#141414] transition-transform active:scale-90 disabled:opacity-60",
           justAdded && "text-[#3aa15c]",
         )}
       >

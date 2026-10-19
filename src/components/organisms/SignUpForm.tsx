@@ -9,7 +9,7 @@ import { cn } from "@/lib/utils";
 const initial: AuthState = { status: "idle" };
 
 const inputClasses =
-  "w-full rounded-lg border border-[#d8dade] bg-white px-3.5 py-2.5 text-[15px] outline-none focus:border-ink";
+  "w-full rounded-lg border border-[#d8dade] bg-frame px-3.5 py-2.5 text-[15px] outline-none focus:border-ink";
 
 export function SignUpForm() {
   const [state, formAction, pending] = useActionState(signUp, initial);

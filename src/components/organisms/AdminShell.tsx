@@ -47,6 +47,7 @@ const NAV_GROUPS: NavGroup[] = [
       { href: "/admin/materials", label: "Materials", icon: ReceiptIcon },
     ],
   },
+  { label: "Settings", items: [{ href: "/admin/theme", label: "Theme", icon: PaletteIcon }] },
 ];
 
 const PAGE_TITLES: Record<string, string> = {
@@ -62,6 +63,7 @@ const PAGE_TITLES: Record<string, string> = {
   "/admin/sizes": "Sizes",
   "/admin/colors": "Colors",
   "/admin/materials": "Materials",
+  "/admin/theme": "Theme",
 };
 
 type Props = {
@@ -78,7 +80,7 @@ export function AdminShell({ userEmail, notifications, signOutAction, children }
   const initial = (userEmail[0] ?? "A").toUpperCase();
 
   return (
-    <div className="min-h-screen bg-frame">
+    <div className="admin-shell min-h-screen bg-frame font-sans text-ink">
       <aside
         className={`fixed inset-y-0 left-0 z-20 flex flex-col border-r border-[#eceef0] bg-white transition-[width] duration-200 ${
           collapsed ? "w-[76px] p-3" : "w-[280px] p-5"

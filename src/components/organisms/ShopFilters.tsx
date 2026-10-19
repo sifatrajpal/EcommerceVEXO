@@ -36,7 +36,7 @@ export function ShopFilters(props: Props) {
   const hasFilters = category || season || sort;
 
   return (
-    <aside className="sticky top-[10px] flex h-[calc(100svh-20px)] w-[15.5cqw] min-w-[190px] flex-col rounded-[1.4cqw] bg-white p-[1.6cqw]">
+    <aside className="sticky top-[10px] flex h-[calc(100svh-20px)] w-[15.5cqw] min-w-[190px] flex-col rounded-[1.4cqw] bg-frame p-[1.6cqw]">
       <div className="flex items-center justify-between">
         <h2 className="text-[clamp(13px,1cqw,16px)] font-semibold tracking-[0.02em]">FILTERS</h2>
         {hasFilters && (

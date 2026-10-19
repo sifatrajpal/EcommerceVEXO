@@ -505,3 +505,24 @@ drop policy if exists "admin write coupons" on public.coupons;
 create policy "admin write coupons" on public.coupons for all to authenticated
   using (exists (select 1 from public.admins a where a.user_id = auth.uid()))
   with check (exists (select 1 from public.admins a where a.user_id = auth.uid()));
+
+-- ─────────────────────────────────────────────────────────────
+-- Site settings — single source of truth for the active storefront theme,
+-- switched from Admin → Theme. Publicly readable (every visitor's page load
+-- needs it to pick the right CSS); only an admin can change it.
+-- ─────────────────────────────────────────────────────────────
+create table if not exists public.site_settings (
+  key        text primary key,
+  value      text not null,
+  updated_at timestamptz not null default now()
+);
+
+alter table public.site_settings enable row level security;
+
+drop policy if exists "public read site_settings" on public.site_settings;
+create policy "public read site_settings" on public.site_settings for select to anon, authenticated using (true);
+
+drop policy if exists "admin write site_settings" on public.site_settings;
+create policy "admin write site_settings" on public.site_settings for all to authenticated
+  using (exists (select 1 from public.admins a where a.user_id = auth.uid()))
+  with check (exists (select 1 from public.admins a where a.user_id = auth.uid()));

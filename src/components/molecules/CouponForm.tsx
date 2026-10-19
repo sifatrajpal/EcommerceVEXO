@@ -14,7 +14,7 @@ export function CouponForm() {
       <input
         name="code"
         placeholder="Enter Coupon Code"
-        className="w-full rounded-md border border-[#d8dade] bg-white px-3 py-2 text-[13px] outline-none focus:border-ink"
+        className="w-full rounded-md border border-[#d8dade] bg-frame px-3 py-2 text-[13px] outline-none focus:border-ink"
       />
       {state.status !== "idle" && (
         <p className={`mt-1.5 text-[12px] ${state.status === "error" ? "text-[#c23434]" : "text-[#3aa15c]"}`}>{state.message}</p>

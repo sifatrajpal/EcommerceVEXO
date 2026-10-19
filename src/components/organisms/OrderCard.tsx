@@ -15,7 +15,7 @@ export function OrderCard({ order }: { order: MyOrder }) {
   const status = ORDER_STATUS_COPY[order.status as keyof typeof ORDER_STATUS_COPY] ?? { label: order.status, sub: "" };
 
   return (
-    <div className="overflow-hidden rounded-[14px] bg-white">
+    <div className="overflow-hidden rounded-[14px] bg-frame">
       <div className="flex flex-wrap items-center justify-between gap-4 bg-panel px-5 py-4 text-[13px]">
         <div className="flex flex-wrap gap-8">
           <div>

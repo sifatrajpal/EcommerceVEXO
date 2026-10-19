@@ -64,7 +64,7 @@ export function LikeButton({ productId, label, className, showCount = false }: P
       aria-pressed={liked}
       onClick={handleClick}
       className={cn(
-        "grid size-9 shrink-0 place-items-center rounded-full border border-[#e4e5e8] bg-white transition-transform active:scale-90",
+        "grid size-9 shrink-0 place-items-center rounded-full border border-[#e4e5e8] bg-white text-[#141414] transition-transform active:scale-90",
         !showCount && className,
       )}
     >

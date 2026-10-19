@@ -3,13 +3,15 @@ import type { ComponentProps } from "react";
 import { cn } from "@/lib/utils";
 
 const variants = {
-  dark: "bg-[#141414] text-white",
-  light: "bg-white text-ink",
+  // Token-driven (not hardcoded hex) so a dark theme correctly inverts these instead of
+  // the button disappearing into a same-toned background.
+  dark: "bg-ink text-frame",
+  light: "bg-frame text-ink",
   subtle: "bg-panel text-ink",
 } as const;
 
 const shapes = {
-  pill: "rounded-full px-[1.7cqw] py-[1.2cqw]",
+  pill: "rounded-[var(--radius-button)] px-[1.7cqw] py-[1.2cqw]",
   square: "rounded-[0.7cqw] px-[2.4cqw] py-[1.2cqw]",
 } as const;
 

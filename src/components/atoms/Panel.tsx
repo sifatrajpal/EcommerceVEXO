@@ -14,7 +14,7 @@ type PanelProps = HTMLAttributes<HTMLDivElement> & {
 export function Panel({ as: Tag = "section", background = "bg-panel", className, children, ...rest }: PanelProps) {
   return (
     <Tag className="@container w-full">
-      <div className={cn("relative w-full overflow-hidden rounded-[22px]", background, className)} {...rest}>
+      <div className={cn("relative w-full overflow-hidden rounded-[var(--radius-panel)]", background, className)} {...rest}>
         {children}
       </div>
     </Tag>

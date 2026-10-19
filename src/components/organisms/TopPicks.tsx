@@ -1,10 +1,14 @@
+import Link from "next/link";
 import { Panel } from "@/components/atoms/Panel";
 import { Eyebrow } from "@/components/atoms/Eyebrow";
 import { Text } from "@/components/atoms/Text";
 import { AnimatedHeading } from "@/components/atoms/AnimatedHeading";
 import { RevealImage } from "@/components/atoms/RevealImage";
+import type { Theme } from "@/lib/data/settings";
+import { THEME_IMAGES } from "@/lib/theme-images";
 
-export function TopPicks() {
+export function TopPicks({ theme = "default" }: { theme?: Theme }) {
+  const images = THEME_IMAGES[theme];
   return (
     <Panel id="top-picks" className="px-[2.6cqw] pt-[1.4cqw] pb-[2.6cqw]">
       <Eyebrow>OUR TOP PICKS</Eyebrow>
@@ -18,37 +22,43 @@ export function TopPicks() {
         </Text>
       </div>
 
-      <div className="grid grid-cols-1 items-start gap-[3.2cqw] md:grid-cols-[1fr_1.5fr_1fr]">
+      <div className="mirror-grid grid grid-cols-1 items-start gap-[3.2cqw] md:grid-cols-[1fr_1.5fr_1fr]">
         <div className="flex flex-col gap-[1.2cqw] animate-float">
-          <RevealImage
-            src="/images/arrival-6.png"
-            alt="Model in a tailored brown suit from the Women Originals line"
-            sizes="(max-width: 768px) 30vw, 18vw"
-            className="relative aspect-[3/2] rounded-[1.6cqw]"
-            imgClassName="object-top"
-          />
+          <Link href="/shop" aria-label="Shop the collection" className="contents">
+            <RevealImage
+              src={images.pickA}
+              alt="Model from the current collection"
+              sizes="(max-width: 768px) 30vw, 18vw"
+              className="relative aspect-[3/2] rounded-[1.6cqw]"
+              imgClassName="object-top"
+            />
+          </Link>
           <Text>Performance-driven gear for everyone — built for summer heat and winter cold.</Text>
         </div>
 
-        <RevealImage
-          src="/images/feature-athlete.png"
-          alt="Model in dark, moody streetwear"
-          delay={0.12}
-          sizes="(max-width: 768px) 40vw, 28vw"
-          className="relative aspect-[4/5] rounded-[1.6cqw] animate-float [animation-delay:1.5s]"
-          imgClassName="object-top"
-        />
+        <Link href="/shop" aria-label="Shop the collection" className="contents">
+          <RevealImage
+            src={images.featureAthlete}
+            alt="Model in dark, moody streetwear"
+            delay={0.12}
+            sizes="(max-width: 768px) 40vw, 28vw"
+            className="relative aspect-[4/5] rounded-[1.6cqw] animate-float [animation-delay:1.5s]"
+            imgClassName="object-top"
+          />
+        </Link>
 
         <div className="flex h-full flex-col gap-[1.2cqw] self-stretch animate-float [animation-delay:3s]">
           <Text>Stay warm, stay fit. Our winter workout wear blends insulation with flexibility to keep you going in the toughest conditions.</Text>
-          <RevealImage
-            src="/images/arrival-3.png"
-            alt="Model in an olive suit set from the Women Originals line"
-            delay={0.24}
-            sizes="(max-width: 768px) 30vw, 18vw"
-            className="relative mt-auto aspect-[3/2] rounded-[1.6cqw]"
-            imgClassName="object-top"
-          />
+          <Link href="/shop" aria-label="Shop the collection" className="contents">
+            <RevealImage
+              src={images.pickB}
+              alt="Model from the current collection"
+              delay={0.24}
+              sizes="(max-width: 768px) 30vw, 18vw"
+              className="relative mt-auto aspect-[3/2] rounded-[1.6cqw]"
+              imgClassName="object-top"
+            />
+          </Link>
         </div>
       </div>
     </Panel>

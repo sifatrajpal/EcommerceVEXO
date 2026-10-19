@@ -8,24 +8,28 @@ import { Button } from "@/components/atoms/Button";
 import { Eyebrow } from "@/components/atoms/Eyebrow";
 import { Text } from "@/components/atoms/Text";
 import { Tag } from "@/components/atoms/Tag";
-import { IconCircle } from "@/components/atoms/IconCircle";
 import { ArrowUpRightIcon } from "@/components/atoms/Icons";
 import { AnimatedHeading } from "@/components/atoms/AnimatedHeading";
 import { RevealImage } from "@/components/atoms/RevealImage";
 import { TabBar } from "@/components/molecules/TabBar";
 import type { EditTab } from "@/lib/types";
+import type { Theme } from "@/lib/data/settings";
+import { THEME_IMAGES } from "@/lib/theme-images";
 
 /**
  * Tabs pipeline: click tab → setActive(i) → new imageA/imageB src
  * → RevealImage fades the old picture out, swaps it, then fades the new one in.
  */
-export function ShopTheEdit({ tabs }: { tabs: EditTab[] }) {
+export function ShopTheEdit({ tabs, theme = "default" }: { tabs: EditTab[]; theme?: Theme }) {
   const [active, setActive] = useState(0);
   const tab = tabs[active];
+  const images = THEME_IMAGES[theme];
+  // The tuned crop below was picked for the default photos — a swapped-in theme photo gets a plain center crop instead.
+  const tunedCrop = theme === "default" || theme === "elanora";
 
   return (
-    <Panel className="px-[3.4cqw] pt-[4.2cqw] pb-[3.4cqw] bg-slate-50">
-      <div className="grid items-start gap-[4.5cqw] md:grid-cols-[34%_1fr] ">
+    <Panel className="px-[3.4cqw] pt-[4.2cqw] pb-[3.4cqw]">
+      <div className="mirror-grid grid items-start gap-[4.5cqw] md:grid-cols-[34%_1fr] ">
         {/* Copy */}
         <div className="pt-[0.6cqw]">
           <Eyebrow className="mb-[1.6cqw] text-[#8e939a]">Collection</Eyebrow>
@@ -44,27 +48,31 @@ export function ShopTheEdit({ tabs }: { tabs: EditTab[] }) {
         <div>
           <TabBar tabs={tabs} active={active} onChange={setActive} label="Shop by category" />
           <div role="tabpanel" aria-label={tab.label} className="mt-[2cqw] grid grid-cols-[1.15fr_1fr] gap-[2.2cqw]">
-            <RevealImage
-              src={tab.imageA}
-              alt={`${tab.label} look`}
-              sizes="(max-width: 768px) 55vw, 30vw"
-              className="relative h-[26cqw] rounded-[1.4cqw] max-md:h-[55cqw]"
-              imgClassName="object-[50%_25%]"
-            />
-            <RevealImage
-              src={tab.imageB}
-              alt={`${tab.label} detail`}
-              delay={0.12}
-              sizes="(max-width: 768px) 45vw, 25vw"
-              className="relative h-[26cqw] rounded-[1.4cqw] max-md:h-[55cqw]"
-              imgClassName="object-[50%_30%]"
-            />
+            <Link href="/shop" aria-label="Shop the collection" className="contents">
+              <RevealImage
+                src={tab.imageA}
+                alt={`${tab.label} look`}
+                sizes="(max-width: 768px) 55vw, 30vw"
+                className="relative h-[26cqw] rounded-[1.4cqw] max-md:h-[55cqw]"
+                imgClassName="object-[50%_25%]"
+              />
+            </Link>
+            <Link href="/shop" aria-label="Shop the collection" className="contents">
+              <RevealImage
+                src={tab.imageB}
+                alt={`${tab.label} detail`}
+                delay={0.12}
+                sizes="(max-width: 768px) 45vw, 25vw"
+                className="relative h-[26cqw] rounded-[1.4cqw] max-md:h-[55cqw]"
+                imgClassName="object-[50%_30%]"
+              />
+            </Link>
           </div>
         </div>
       </div>
 
       {/* Bottom row */}
-      <div className="mt-[3cqw] grid gap-[2.8cqw] md:grid-cols-2">
+      <div className="mirror-grid mt-[3cqw] grid gap-[2.8cqw] md:grid-cols-2">
         <article className="relative aspect-[1.8] overflow-hidden rounded-[1.8cqw] bg-[linear-gradient(135deg,#f6f6f4,#e2e4e6)] max-md:aspect-[1.4]">
           <div className="relative z-10 max-w-[55%] px-[3cqw] py-[3.2cqw]">
             <AnimatedHeading
@@ -77,30 +85,39 @@ export function ShopTheEdit({ tabs }: { tabs: EditTab[] }) {
               Explore layers <span className="inline-block transition-transform group-hover:translate-x-1">→</span>
             </Link>
           </div>
-          <div className="absolute inset-y-0 right-0 w-[52%] [mask-image:linear-gradient(to_right,transparent,black_18%)]">
+          <Link
+            href="/shop?season=winter"
+            aria-label="Shop layers"
+            className="absolute inset-y-0 right-0 w-[52%] [mask-image:linear-gradient(to_right,transparent,black_18%)]"
+          >
             <Image
-              src="/images/cutout-hood.png"
-              alt="Model in a white tank top with a black blazer draped over one shoulder"
+              src={images.cutoutHood}
+              alt="Model wearing the featured cozy layer"
               fill
               sizes="25vw"
-              className="object-cover object-[65%_35%]"
+              className={tunedCrop ? "object-cover object-[65%_35%]" : "object-cover object-center"}
             />
-          </div>
+          </Link>
         </article>
 
-        <RevealImage
-          src="/images/poster-group.png"
-          alt="Model in a beige trench coat and jeans for the new season line-up"
-          delay={0.12}
-          sizes="(max-width: 768px) 100vw, 50vw"
-          className="relative aspect-[1.8] rounded-[1.8cqw] max-md:aspect-[1.4]"
-          imgClassName="object-[50%_22%]"
-        >
-          <Tag className="absolute top-[1.6cqw] left-[1.6cqw]">LOOKBOOK 2026</Tag>
-          <IconCircle label="Open lookbook" href="/shop" className="absolute right-[1.6cqw] bottom-[1.6cqw] size-[3.2cqw] min-h-7.5 min-w-7.5 bg-white transition-transform duration-300 hover:rotate-45">
-            <ArrowUpRightIcon />
-          </IconCircle>
-        </RevealImage>
+        <Link href="/shop" aria-label="Open lookbook" className="contents">
+          <RevealImage
+            src={images.posterGroup}
+            alt="Model from the current lookbook"
+            delay={0.12}
+            sizes="(max-width: 768px) 100vw, 50vw"
+            className="relative aspect-[1.8] rounded-[1.8cqw] max-md:aspect-[1.4]"
+            imgClassName={tunedCrop ? "object-[50%_22%]" : "object-center"}
+          >
+            <Tag className="absolute top-[1.6cqw] left-[1.6cqw] text-[#141414]">LOOKBOOK 2026</Tag>
+            <span
+              aria-hidden
+              className="absolute right-[1.6cqw] bottom-[1.6cqw] grid size-[3.2cqw] min-h-7.5 min-w-7.5 place-items-center rounded-full bg-frame transition-transform duration-300 hover:rotate-45 [&>svg]:w-[45%]"
+            >
+              <ArrowUpRightIcon />
+            </span>
+          </RevealImage>
+        </Link>
       </div>
     </Panel>
   );

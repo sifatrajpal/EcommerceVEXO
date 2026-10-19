@@ -70,7 +70,7 @@ export function SizeColorPicker({ variants, fallbackSizes, fallbackColors }: Pro
                 onClick={() => setSelectedSizeId(size.id)}
                 aria-pressed={selectedSizeId === size.id}
                 className={`grid size-9 place-items-center rounded-full border text-[13px] transition-colors ${
-                  selectedSizeId === size.id ? "border-ink bg-ink text-white" : "border-[#d8dade] text-[#6b7078] hover:border-ink"
+                  selectedSizeId === size.id ? "border-ink bg-ink text-frame" : "border-[#d8dade] text-[#6b7078] hover:border-ink"
                 } ${outOfStock ? "cursor-not-allowed opacity-30 hover:border-[#d8dade]" : ""}`}
               >
                 {size.name}

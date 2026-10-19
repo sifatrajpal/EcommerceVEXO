@@ -29,7 +29,7 @@ export function TabBar({ tabs, active, onChange, label }: Props) {
           onClick={() => onChange(i)}
           className={cn(
             "rounded-[0.7cqw] px-[2.2cqw] py-[0.8cqw] text-[clamp(10px,0.92cqw,14px)] transition-colors duration-300",
-            i === active ? "bg-[#141414] text-white" : "text-[#333] hover:bg-[#dde0e3]",
+            i === active ? "bg-ink text-frame" : "text-ink hover:bg-ghost",
           )}
         >
           {tab.label}

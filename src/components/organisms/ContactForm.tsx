@@ -5,7 +5,7 @@ import { submitContactMessage, type ContactState } from "@/actions/contact";
 
 const initial: ContactState = { status: "idle" };
 
-const inputClasses = "w-full rounded-lg border border-[#d8dade] bg-white px-3.5 py-2.5 text-[15px] outline-none focus:border-ink";
+const inputClasses = "w-full rounded-lg border border-[#d8dade] bg-frame px-3.5 py-2.5 text-[15px] outline-none focus:border-ink";
 const labelClasses = "flex flex-col gap-1.5 text-[13px] font-medium";
 
 export function ContactForm() {

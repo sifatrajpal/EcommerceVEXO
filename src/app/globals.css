@@ -10,6 +10,11 @@
   --color-ghost: #cfd2d6;
   --color-muted: #6b7078;
 
+  /* Shape language — Panel/Button read these so a theme can change the site's
+     silhouette (rounded cards vs. flat edge-to-edge sections), not just color. */
+  --radius-panel: 22px;
+  --radius-button: 9999px;
+
   --animate-drop: drop 0.9s cubic-bezier(0.2, 0.7, 0.2, 1) both;
   --animate-rise: rise 1.4s cubic-bezier(0.2, 0.8, 0.2, 1) both;
   --animate-up: up 0.8s cubic-bezier(0.2, 0.7, 0.2, 1) both;
@@ -32,6 +37,125 @@
 }
 
 html, body { background: var(--color-frame); color: var(--color-ink); }
+
+/* The hero's background is a fixed gradient, not a flat token color — themed separately
+   here so a dark theme's near-white heading/nav text isn't stranded on a light sky. */
+:root { --hero-gradient: linear-gradient(180deg, #cfe8fb 0%, #e6f3fc 45%, #ffffff 100%); }
+[data-theme="noir"] { --hero-gradient: linear-gradient(180deg, #202023 0%, #141416 45%, #0c0c0d 100%); }
+
+/* ───────────── Élanora theme (Admin → Theme) ─────────────
+   Overrides the same design-token variables the whole site already
+   renders from, so switching back to "default" is a single attribute
+   change with zero risk — no component ever hardcodes a color/font. */
+[data-theme="elanora"] {
+  --color-ink: #2a2420;
+  --color-frame: #f8f5f1;
+  --color-panel: #ede6dd;
+  --color-ghost: #e6ddd1;
+  --color-muted: #6b625b;
+  --font-sans: var(--font-jost), system-ui, sans-serif;
+  /* Flat, edge-to-edge sections and near-square buttons, per the reference file — a
+     deliberately different silhouette from VEXO's rounded-card default. */
+  --radius-panel: 0px;
+  --radius-button: 3px;
+}
+[data-theme="elanora"] h1,
+[data-theme="elanora"] h2,
+[data-theme="elanora"] h3 {
+  font-family: var(--font-gilda), Georgia, serif;
+  letter-spacing: 0.01em;
+}
+
+/* Mirrors a left/right grid (copy-then-images becomes images-then-copy, etc.) without
+   touching the markup: reversing the container's direction reverses which physical
+   side each track renders on, then each child resets back to normal text flow. */
+[data-theme="elanora"] .mirror-grid {
+  direction: rtl;
+}
+[data-theme="elanora"] .mirror-grid > * {
+  direction: ltr;
+}
+
+/* Swap the angular notch + radiating lines for a soft circular arc behind the hero,
+   echoing the reference hero's shape — hidden entirely outside the Élanora theme. */
+[data-theme="elanora"] .notch::before,
+[data-theme="elanora"] .hero-lines {
+  display: none;
+}
+[data-theme="elanora"] .notch::after {
+  content: "";
+  position: absolute;
+  z-index: 0;
+  left: -22%;
+  top: -42%;
+  width: 78%;
+  height: 170%;
+  border-radius: 50%;
+  background: var(--color-panel);
+}
+
+/* ───────────── Noir theme (Admin → Theme) ─────────────
+   Dark, flat, condensed — a moodier streetwear/techwear read. Button/IconCircle
+   read --color-ink/--color-frame (not hardcoded hex), so "dark" buttons correctly
+   invert to light-on-dark here instead of disappearing into the background. */
+[data-theme="noir"] {
+  --color-ink: #f2f2f0;
+  --color-frame: #0c0c0d;
+  --color-panel: #1c1c1f;
+  --color-ghost: #333336;
+  --color-muted: #9a9a9f;
+  --font-sans: var(--font-oswald), system-ui, sans-serif;
+  --radius-panel: 0px;
+  --radius-button: 2px;
+}
+[data-theme="noir"] h1,
+[data-theme="noir"] h2,
+[data-theme="noir"] h3 {
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+/* ───────────── Studio theme (Admin → Theme) ─────────────
+   Soft, airy, editorial — warm off-white with extra-soft corners and a serif display face. */
+[data-theme="studio"] {
+  --color-ink: #2b2824;
+  --color-frame: #faf8f5;
+  --color-panel: #f1ece4;
+  --color-ghost: #e6ddd1;
+  --color-muted: #8a8178;
+  --font-sans: var(--font-jost), system-ui, sans-serif;
+  --radius-panel: 36px;
+  --radius-button: 9999px;
+}
+[data-theme="studio"] h1,
+[data-theme="studio"] h2,
+[data-theme="studio"] h3 {
+  font-family: var(--font-fraunces), Georgia, serif;
+}
+
+/* ───────────── Admin console — always its own look ─────────────
+   The storefront theme (Admin → Theme) sets color tokens on <html> and heading-font
+   rules on bare h1/h2/h3, which every public page reads on purpose. The admin UI was
+   never designed to re-skin itself for four different storefront palettes, so everything
+   here resets back to the original values, regardless of which theme shoppers currently
+   see — placed after the theme blocks above so it wins the (equal-specificity) cascade. */
+.admin-shell {
+  --color-ink: #111111;
+  --color-frame: #ffffff;
+  --color-panel: #e9ebed;
+  --color-ghost: #cfd2d6;
+  --color-muted: #6b7078;
+  --radius-panel: 22px;
+  --radius-button: 9999px;
+  --font-sans: var(--font-archivo), system-ui, Helvetica, Arial, sans-serif;
+}
+.admin-shell h1,
+.admin-shell h2,
+.admin-shell h3 {
+  font-family: var(--font-sans);
+  text-transform: none;
+  letter-spacing: normal;
+}
 
 /* ───────────── Hero notch (trapezoid behind the logo) ───────────── */
 .notch::before {

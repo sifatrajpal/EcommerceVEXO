@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Panel } from "@/components/atoms/Panel";
-import { Tag } from "@/components/atoms/Tag";
 import { AnimatedHeading } from "@/components/atoms/AnimatedHeading";
 import { LikeButton } from "@/components/atoms/LikeButton";
 import { StarIcon } from "@/components/atoms/Icons";
@@ -52,9 +51,15 @@ export default async function ProductPage({ params }: { params: Promise<{ id: st
 
           <div className="flex flex-col gap-[1.3cqw]">
             <div className="flex flex-wrap items-center gap-[0.6cqw]">
-              <Tag className="bg-panel">{product.season}</Tag>
-              {product.collection && <Tag className="bg-panel">{product.collection}</Tag>}
-              {isNew && <span className="inline-grid place-items-center rounded-full bg-ink px-[1.1cqw] py-[0.45cqw] text-[clamp(9px,0.78cqw,12px)] text-white">New</span>}
+              <span className="inline-grid place-items-center rounded-full bg-panel px-[1.1cqw] py-[0.45cqw] text-[clamp(9px,0.78cqw,12px)] text-ink">
+                {product.season}
+              </span>
+              {product.collection && (
+                <span className="inline-grid place-items-center rounded-full bg-panel px-[1.1cqw] py-[0.45cqw] text-[clamp(9px,0.78cqw,12px)] text-ink">
+                  {product.collection}
+                </span>
+              )}
+              {isNew && <span className="inline-grid place-items-center rounded-full bg-ink px-[1.1cqw] py-[0.45cqw] text-[clamp(9px,0.78cqw,12px)] text-frame">New</span>}
             </div>
             <AnimatedHeading as="h1" lines={[product.name.toUpperCase()]} className="text-[3.2cqw] leading-[0.95] font-medium tracking-[-0.04em]" />
 

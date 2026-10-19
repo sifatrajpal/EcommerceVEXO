@@ -38,10 +38,10 @@ export async function SiteHeader() {
           ) : (
             <Button href="/sign-in" shape="pill" className="!px-[1.6cqw] !py-[1cqw]">SIGN&nbsp; IN / UP</Button>
           )}
-          <IconCircle label="Cart" href="/cart" className="relative size-[3.1cqw] min-h-7 min-w-7 bg-[#141414] text-white">
+          <IconCircle label="Cart" href="/cart" className="relative size-[3.1cqw] min-h-7 min-w-7 bg-ink text-frame">
             <BagIcon />
             {cartCount > 0 && (
-              <span className="absolute -top-1 -right-1 grid size-4 place-items-center rounded-full bg-white text-[10px] text-ink">
+              <span className="absolute -top-1 -right-1 grid size-4 place-items-center rounded-full bg-frame text-[10px] text-ink">
                 {cartCount}
               </span>
             )}

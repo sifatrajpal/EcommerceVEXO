@@ -18,7 +18,7 @@ import { computeDiscount, COUPON_COOKIE } from "@/lib/pricing";
 import { formatPrice, DELIVERY_FEE, FREE_SHIPPING_THRESHOLD } from "@/lib/utils";
 
 const addressInputClasses =
-  "w-full rounded-md border border-[#d8dade] bg-white px-3 py-2 text-[13px] outline-none focus:border-ink";
+  "w-full rounded-md border border-[#d8dade] bg-frame px-3 py-2 text-[13px] outline-none focus:border-ink";
 
 export default async function CartPage({ searchParams }: { searchParams: Promise<{ error?: string }> }) {
   const { error } = await searchParams;
@@ -56,6 +56,12 @@ export default async function CartPage({ searchParams }: { searchParams: Promise
           )}
         </div>
 
+        {(error === "remove-failed" || error === "update-failed") && (
+          <p className="mt-2 text-[13px] text-[#c23434]">
+            Couldn&apos;t update your bag — please try again. If this keeps happening, sign out and back in.
+          </p>
+        )}
+
         {items.length === 0 ? (
           <div className="py-16 text-center">
             <Text>Your bag is empty.</Text>
@@ -66,7 +72,7 @@ export default async function CartPage({ searchParams }: { searchParams: Promise
             <div className="flex flex-col divide-y divide-[#e4e5e8]">
               {items.map((item) => (
                 <div key={item.id} className="flex gap-5 py-6 first:pt-0">
-                  <div className="relative h-[140px] w-[110px] shrink-0 overflow-hidden rounded-[10px] bg-white">
+                  <div className="relative h-[140px] w-[110px] shrink-0 overflow-hidden rounded-[10px] bg-frame">
                     <Image src={item.product.imageUrl} alt={item.product.name} fill sizes="110px" className="object-cover" />
                   </div>
 
@@ -79,9 +85,9 @@ export default async function CartPage({ searchParams }: { searchParams: Promise
                       <div>
                         <form action={updateCartQuantity} className="mt-3 flex items-center gap-2">
                           <input type="hidden" name="itemId" value={item.id} />
-                          <button type="submit" name="quantity" value={item.quantity - 1} aria-label="Decrease quantity" className="grid size-8 place-items-center rounded-md border border-[#d8dade] bg-white">−</button>
-                          <span className="grid size-8 place-items-center rounded-md bg-white text-[14px]">{item.quantity}</span>
-                          <button type="submit" name="quantity" value={item.quantity + 1} aria-label="Increase quantity" className="grid size-8 place-items-center rounded-md border border-[#d8dade] bg-white">
+                          <button type="submit" name="quantity" value={item.quantity - 1} aria-label="Decrease quantity" className="grid size-8 place-items-center rounded-md border border-[#d8dade] bg-frame">−</button>
+                          <span className="grid size-8 place-items-center rounded-md bg-frame text-[14px]">{item.quantity}</span>
+                          <button type="submit" name="quantity" value={item.quantity + 1} aria-label="Increase quantity" className="grid size-8 place-items-center rounded-md border border-[#d8dade] bg-frame">
                             +
                           </button>
                         </form>
@@ -98,7 +104,7 @@ export default async function CartPage({ searchParams }: { searchParams: Promise
               ))}
             </div>
 
-            <aside className="h-fit rounded-[16px] bg-white p-6">
+            <aside className="h-fit rounded-[16px] bg-frame p-6">
               <div className="flex items-center justify-between">
                 <h2 className="text-lg font-semibold">Checkout</h2>
                 <BagIcon className="size-5" />

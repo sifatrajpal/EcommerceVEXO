@@ -1,10 +1,13 @@
 import Image from "next/image";
+import Link from "next/link";
 import { Panel } from "@/components/atoms/Panel";
 import { Button } from "@/components/atoms/Button";
 import { AnimatedHeading } from "@/components/atoms/AnimatedHeading";
 import { HeroNote } from "@/components/molecules/HeroNote";
 import { VideoCard } from "@/components/molecules/VideoCard";
 import { SiteHeader } from "./SiteHeader";
+import type { Theme } from "@/lib/data/settings";
+import { THEME_IMAGES } from "@/lib/theme-images";
 
 // Line end points (in a 921×540 box) radiating from behind the model.
 const RAYS = [[120, 175], [60, 250], [20, 360], [150, 450], [790, 175], [870, 250], [910, 360], [780, 450]];
@@ -15,9 +18,10 @@ const RAYS = [[120, 175], [60, 250], [20, 360], [150, 450], [790, 175], [870, 25
  * else reveals after it settles: header 1.6s → heading letters (~1.8s+) → lines 2s →
  * buttons 2.7s → note 2.9s → video 3s
  */
-export function Hero() {
+export function Hero({ theme = "default" }: { theme?: Theme }) {
+  const images = THEME_IMAGES[theme];
   return (
-    <Panel background="bg-[linear-gradient(180deg,#cfe8fb_0%,#e6f3fc_45%,#ffffff_100%)]" className="notch aspect-[921/495] min-h-[520px]">
+    <Panel background="bg-[image:var(--hero-gradient)]" className="notch aspect-[921/495] min-h-[520px]">
       <svg className="hero-lines absolute inset-0 h-full w-full" viewBox="0 0 921 540" preserveAspectRatio="none" aria-hidden>
         <g stroke="#fff" strokeWidth={1} opacity={0.75}>
           {RAYS.map(([x, y], i) => <line key={i} x1={455} y1={340} x2={x} y2={y} />)}
@@ -39,15 +43,16 @@ export function Hero() {
       </div>
 
       <div className="relative z-10 mt-[1.6cqw] flex justify-center">
-        <Image
-          src="/images/hero-model.png"
-          alt="Model in an oversized black hoodie adjusting his sunglasses"
-          width={1200}
-          height={1879}
-          priority
-          sizes="24vw"
-          className="pointer-events-none w-[24cqw] origin-center animate-hero-zoom"
-        />
+        <Link href="/shop" aria-label="Shop the collection" className="relative aspect-[1200/1879] w-[24cqw]">
+          <Image
+            src={images.hero}
+            alt="Model from the current collection"
+            fill
+            priority
+            sizes="24vw"
+            className="origin-center object-cover animate-hero-zoom"
+          />
+        </Link>
       </div>
 
       <HeroNote text="Stay cozy without compromising your range of motion. Our women's winter range is perfect for those chilly outdoor workouts." />

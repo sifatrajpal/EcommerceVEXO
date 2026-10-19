@@ -113,7 +113,7 @@ function ReviewsRow({ productId, reviews, average, count }: { productId: string;
               setOpen(true);
               setShowForm((s) => !s);
             }}
-            className="group inline-flex items-center gap-2 rounded-md border border-ink px-[1.4cqw] py-[0.7cqw] text-[clamp(11px,0.85cqw,13px)] font-semibold transition-colors hover:bg-ink hover:text-white"
+            className="group inline-flex items-center gap-2 rounded-md border border-ink px-[1.4cqw] py-[0.7cqw] text-[clamp(11px,0.85cqw,13px)] font-semibold transition-colors hover:bg-ink hover:text-frame"
           >
             Write a review
             <span className="inline-block transition-transform duration-200 group-hover:translate-x-1">→</span>

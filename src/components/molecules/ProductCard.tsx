@@ -31,11 +31,11 @@ export function ProductCard({ product, delay = 0, className, imageClassName = "a
           {(isNew || product.collection) && (
             <div className="absolute top-[1cqw] left-[1cqw] flex flex-col items-start gap-[0.4cqw]">
               {isNew && (
-                <span className="inline-grid place-items-center rounded-full bg-ink px-[1.1cqw] py-[0.45cqw] text-[clamp(9px,0.78cqw,12px)] text-white">
+                <span className="inline-grid place-items-center rounded-full bg-ink px-[1.1cqw] py-[0.45cqw] text-[clamp(9px,0.78cqw,12px)] text-frame">
                   New
                 </span>
               )}
-              {product.collection && <Tag>{product.collection}</Tag>}
+              {product.collection && <Tag className="text-[#141414]">{product.collection}</Tag>}
             </div>
           )}
           <LikeButton

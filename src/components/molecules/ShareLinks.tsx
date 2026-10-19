@@ -45,7 +45,7 @@ export function ShareLinks({ title }: { title: string }) {
       <button type="button" onClick={share} aria-label="Copy link" className={cn(iconBtn, "relative")}>
         <LinkIcon className="size-4" />
         {copied && (
-          <span className="absolute -top-8 left-1/2 -translate-x-1/2 rounded-full bg-ink px-2 py-1 text-[10px] whitespace-nowrap text-white">
+          <span className="absolute -top-8 left-1/2 -translate-x-1/2 rounded-full bg-ink px-2 py-1 text-[10px] whitespace-nowrap text-frame">
             Copied!
           </span>
         )}

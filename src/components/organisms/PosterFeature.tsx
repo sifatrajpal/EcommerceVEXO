@@ -1,9 +1,12 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import Link from "next/link";
 import { Panel } from "@/components/atoms/Panel";
 import { ScrollText } from "@/components/atoms/ScrollText";
 import { RevealImage } from "@/components/atoms/RevealImage";
+import type { Theme } from "@/lib/data/settings";
+import { THEME_IMAGES } from "@/lib/theme-images";
 
 const ROWS = [
   { text: "FOR YOUR NEXT WORKOUT FOR YOUR NEXT", direction: -1 as const, offset: -0.02, top: "top-[17.2%]" },
@@ -23,7 +26,8 @@ const LABELS = [
  * 2) white, inside the card (clipped by overflow-hidden)
  * The inside copy is shifted by the card's own offset so both line up perfectly.
  */
-export function PosterFeature() {
+export function PosterFeature({ theme = "default" }: { theme?: Theme }) {
+  const images = THEME_IMAGES[theme];
   const cardRef = useRef<HTMLDivElement>(null);
   const mirrorRef = useRef<HTMLDivElement>(null);
 
@@ -52,7 +56,9 @@ export function PosterFeature() {
       ))}
 
       <div ref={cardRef} className="absolute top-[10.9%] left-[32.9%] z-20 h-[75.2%] w-[34.2%] overflow-hidden rounded-[1.9cqw]">
-        <RevealImage src="/images/feature-athlete.png" alt="Model in a snake-print coat over a black turtleneck" sizes="35vw" className="absolute inset-0" />
+        <Link href="/shop" aria-label="Shop the collection" className="contents">
+          <RevealImage src={images.featureAthlete} alt="Model from the current collection" sizes="35vw" className="absolute inset-0" />
+        </Link>
 
         <div ref={mirrorRef} data-scroll-section aria-hidden className="pointer-events-none absolute z-10">
           {ROWS.map((r) => (

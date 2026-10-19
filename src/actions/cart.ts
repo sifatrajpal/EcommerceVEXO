@@ -38,27 +38,49 @@ export async function addToCart(_prev: AddToCartState, formData: FormData): Prom
 export async function updateCartQuantity(formData: FormData) {
   const itemId = String(formData.get("itemId") ?? "");
   const quantity = Number(formData.get("quantity") ?? 0);
-  const { supabase } = await requireUser();
+  const { supabase, user } = await requireUser();
 
-  if (quantity <= 0) {
-    await supabase.from("cart_items").delete().eq("id", itemId);
-  } else {
-    await supabase.from("cart_items").update({ quantity }).eq("id", itemId);
-  }
+  const { error, data } =
+    quantity <= 0
+      ? await supabase.from("cart_items").delete().eq("id", itemId).eq("user_id", user.id).select("id")
+      : await supabase.from("cart_items").update({ quantity }).eq("id", itemId).eq("user_id", user.id).select("id");
+
   revalidatePath("/", "layout");
+  if (error || !data || data.length === 0) {
+    // Row Level Security silently blocks (rather than errors on) a delete/update that doesn't
+    // match its policy, so a missing/stale "own cart ..." policy on cart_items shows up here
+    // as "nothing happened" instead of a thrown error — surface it instead of staying silent.
+    console.error("[updateCartQuantity] no row affected", { itemId, quantity, error: error?.message });
+    redirect("/cart?error=update-failed");
+  }
+  // Force a fresh server round-trip rather than relying on the implicit post-action refresh —
+  // more robust against any edge/CDN caching sitting in front of the deployed app.
+  redirect("/cart");
 }
 
 export async function removeFromCart(formData: FormData) {
   const itemId = String(formData.get("itemId") ?? "");
-  const { supabase } = await requireUser();
+  const { supabase, user } = await requireUser();
 
-  await supabase.from("cart_items").delete().eq("id", itemId);
+  const { error, data } = await supabase.from("cart_items").delete().eq("id", itemId).eq("user_id", user.id).select("id");
   revalidatePath("/", "layout");
+  if (error || !data || data.length === 0) {
+    console.error("[removeFromCart] no row deleted", { itemId, error: error?.message });
+    redirect("/cart?error=remove-failed");
+  }
+  redirect("/cart");
 }
 
 export async function clearCart() {
   const { supabase, user } = await requireUser();
 
-  await supabase.from("cart_items").delete().eq("user_id", user.id);
+  const { error, data } = await supabase.from("cart_items").delete().eq("user_id", user.id).select("id");
   revalidatePath("/", "layout");
+  if (error || !data || data.length === 0) {
+    // This action only renders when the cart already has items, so an empty result here
+    // (with no error) means RLS blocked every row rather than there being nothing to delete.
+    console.error("[clearCart] no rows deleted", { error: error?.message });
+    redirect("/cart?error=remove-failed");
+  }
+  redirect("/cart");
 }

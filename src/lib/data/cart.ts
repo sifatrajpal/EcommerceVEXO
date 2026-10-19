@@ -13,7 +13,12 @@ type CartRow = {
   product: { id: string; name: string; price: number | string; currency: string; image_url: string } | null;
 };
 
-/** The signed-in user's cart, or an empty list when signed out. RLS scopes this to their own rows. */
+/**
+ * The signed-in user's own cart, or an empty list when signed out. Filtered explicitly rather
+ * than left to RLS alone — the "own cart select" policy also lets an admin see every user's
+ * cart rows (for an admin dashboard), which would otherwise leak other shoppers' items onto
+ * this personal cart page.
+ */
 export async function getCartItems(): Promise<CartItem[]> {
   const supabase = await createSupabaseServerClient();
   const { data: { user } } = await supabase.auth.getUser();
@@ -22,6 +27,7 @@ export async function getCartItems(): Promise<CartItem[]> {
   const { data, error } = await supabase
     .from("cart_items")
     .select("id, quantity, product:products(id, name, price, currency, image_url)")
+    .eq("user_id", user.id)
     .order("created_at", { ascending: true })
     .returns<CartRow[]>();
 
