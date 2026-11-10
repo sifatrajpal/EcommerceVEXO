@@ -1,5 +1,6 @@
 import "server-only";
-import { createSupabaseServerClient } from "@/lib/supabase/auth-server";
+import { cache } from "react";
+import { createSupabaseServerClient, getCurrentUser } from "@/lib/supabase/auth-server";
 
 export type CartItem = {
   id: string;
@@ -18,12 +19,15 @@ type CartRow = {
  * than left to RLS alone — the "own cart select" policy also lets an admin see every user's
  * cart rows (for an admin dashboard), which would otherwise leak other shoppers' items onto
  * this personal cart page.
+ *
+ * Cached per request: the cart page fetches the full list itself while SiteHeader also
+ * calls this just for the badge count, so without this both ran the same query twice.
  */
-export async function getCartItems(): Promise<CartItem[]> {
-  const supabase = await createSupabaseServerClient();
-  const { data: { user } } = await supabase.auth.getUser();
+export const getCartItems = cache(async (): Promise<CartItem[]> => {
+  const user = await getCurrentUser();
   if (!user) return [];
 
+  const supabase = await createSupabaseServerClient();
   const { data, error } = await supabase
     .from("cart_items")
     .select("id, quantity, product:products(id, name, price, currency, image_url)")
@@ -49,4 +53,4 @@ export async function getCartItems(): Promise<CartItem[]> {
         imageUrl: row.product.image_url,
       },
     }));
-}
+});

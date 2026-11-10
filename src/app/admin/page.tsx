@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { createSupabaseServerClient } from "@/lib/supabase/auth-server";
+import { getCurrentUser } from "@/lib/supabase/auth-server";
 import {
   getAdminStats,
   getRecentOrders,
@@ -23,8 +23,7 @@ function greetingForHour(hour: number) {
 }
 
 export default async function AdminPage() {
-  const supabase = await createSupabaseServerClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const user = await getCurrentUser();
 
   const [stats, recentOrders, topProducts, cartActivity, subscriberCount, productCount, revenueTrend, ordersByStatus] = await Promise.all([
     getAdminStats(),

@@ -2,21 +2,21 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { createSupabaseServerClient } from "@/lib/supabase/auth-server";
+import { createSupabaseServerClient, getCurrentUser } from "@/lib/supabase/auth-server";
 import { isCurrentUserAdmin } from "@/lib/admin";
 import { THEMES, type Theme } from "@/lib/data/settings";
 
 export type SetThemeState = { status: "idle" | "success" | "error"; message?: string };
 
 export async function setTheme(_prev: SetThemeState, formData: FormData): Promise<SetThemeState> {
-  const supabase = await createSupabaseServerClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const user = await getCurrentUser();
   if (!user) redirect("/sign-in");
   if (!(await isCurrentUserAdmin())) return { status: "error", message: "Not authorized." };
 
   const theme = String(formData.get("theme") ?? "");
   if (!THEMES.includes(theme as Theme)) return { status: "error", message: "Unknown theme." };
 
+  const supabase = await createSupabaseServerClient();
   const { error } = await supabase
     .from("site_settings")
     .upsert({ key: "theme", value: theme, updated_at: new Date().toISOString() });

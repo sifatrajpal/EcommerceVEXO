@@ -1,24 +1,14 @@
 "use client";
 
-import { useActionState, useEffect, useState, type ReactNode } from "react";
+import type { ReactNode } from "react";
 import { Button } from "@/components/atoms/Button";
-import { addToCart, type AddToCartState } from "@/actions/cart";
-
-const initial: AddToCartState = { status: "idle" };
+import { useAddToCart } from "@/hooks/useAddToCart";
 
 type Props = { productId: string; children?: ReactNode; after?: ReactNode };
 
 /** Quantity stepper (children) → submit button, which confirms once the item lands in the bag → trailing content (after), e.g. a wishlist button. */
 export function AddToBagForm({ productId, children, after }: Props) {
-  const [state, formAction, pending] = useActionState(addToCart, initial);
-  const [justAdded, setJustAdded] = useState(false);
-
-  useEffect(() => {
-    if (state.status !== "added") return;
-    setJustAdded(true);
-    const timer = setTimeout(() => setJustAdded(false), 1800);
-    return () => clearTimeout(timer);
-  }, [state]);
+  const { state, formAction, pending, justAdded } = useAddToCart(productId, 1800);
 
   return (
     <form action={formAction} className="mt-[1cqw] flex items-center gap-[1.2cqw]">

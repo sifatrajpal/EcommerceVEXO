@@ -1,4 +1,5 @@
 import "server-only";
+import { cache } from "react";
 import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
 
@@ -30,3 +31,18 @@ export async function createSupabaseServerClient() {
     },
   });
 }
+
+/**
+ * The signed-in user, memoized for the lifetime of a single request (React `cache`).
+ * `supabase.auth.getUser()` makes a real network call to Supabase Auth every time it's
+ * invoked — SiteHeader, the cart/admin helpers, and several pages each used to call it
+ * independently on one page load. Routing them all through this shared cache turns that
+ * into a single call per request, no matter how many of them run.
+ */
+export const getCurrentUser = cache(async () => {
+  const supabase = await createSupabaseServerClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  return user;
+});

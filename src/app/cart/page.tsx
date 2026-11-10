@@ -6,7 +6,7 @@ import { Panel } from "@/components/atoms/Panel";
 import { Button } from "@/components/atoms/Button";
 import { Text } from "@/components/atoms/Text";
 import { BagIcon, ArrowUpRightIcon } from "@/components/atoms/Icons";
-import { createSupabaseServerClient } from "@/lib/supabase/auth-server";
+import { getCurrentUser } from "@/lib/supabase/auth-server";
 import { getCartItems } from "@/lib/data/cart";
 import { getActiveCouponByCode } from "@/lib/data/coupons";
 import { updateCartQuantity, removeFromCart, clearCart } from "@/actions/cart";
@@ -22,8 +22,7 @@ const addressInputClasses =
 
 export default async function CartPage({ searchParams }: { searchParams: Promise<{ error?: string }> }) {
   const { error } = await searchParams;
-  const supabase = await createSupabaseServerClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const user = await getCurrentUser();
   if (!user) redirect("/sign-in");
 
   const items = await getCartItems();

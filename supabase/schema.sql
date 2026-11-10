@@ -178,6 +178,12 @@ create table if not exists public.order_items (
   quantity    int not null check (quantity > 0)
 );
 
+-- Foreign keys don't get an automatic index in Postgres — both columns are filtered
+-- on every account/checkout/admin-order-detail query (src/lib/data/orders.ts), so
+-- without these each lookup is a full table scan that only gets slower as orders grow.
+create index if not exists idx_orders_user_id on public.orders(user_id);
+create index if not exists idx_order_items_order_id on public.order_items(order_id);
+
 alter table public.orders     enable row level security;
 alter table public.order_items enable row level security;
 
@@ -370,6 +376,10 @@ create table if not exists public.reviews (
   comment    text not null,
   created_at timestamptz not null default now()
 );
+
+-- Every product page's review list/count filters by product_id (src/lib/data/reviews.ts)
+-- with no unique constraint to lean on here, unlike cart_items/product_likes/product_variants.
+create index if not exists idx_reviews_product_id on public.reviews(product_id);
 
 alter table public.reviews enable row level security;
 

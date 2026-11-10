@@ -5,14 +5,13 @@ import { BagIcon } from "@/components/atoms/Icons";
 import { NavLinks } from "@/components/molecules/NavLinks";
 import { MenuButton } from "@/components/molecules/MenuButton";
 import { primaryNav, secondaryNav } from "@/lib/content";
-import { createSupabaseServerClient } from "@/lib/supabase/auth-server";
+import { getCurrentUser } from "@/lib/supabase/auth-server";
 import { signOut } from "@/actions/auth";
 import { getCartItems } from "@/lib/data/cart";
 import { isCurrentUserAdmin } from "@/lib/admin";
 
 export async function SiteHeader() {
-  const supabase = await createSupabaseServerClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const user = await getCurrentUser();
   const cartCount = user ? (await getCartItems()).reduce((n, item) => n + item.quantity, 0) : 0;
   const admin = user ? await isCurrentUserAdmin() : false;
 

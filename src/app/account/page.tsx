@@ -3,12 +3,11 @@ import { Panel } from "@/components/atoms/Panel";
 import { Button } from "@/components/atoms/Button";
 import { SiteHeaderBar } from "@/components/organisms/SiteHeaderBar";
 import { OrderCard } from "@/components/organisms/OrderCard";
-import { createSupabaseServerClient } from "@/lib/supabase/auth-server";
+import { getCurrentUser } from "@/lib/supabase/auth-server";
 import { getMyOrdersWithItems } from "@/lib/data/orders";
 
 export default async function AccountPage() {
-  const supabase = await createSupabaseServerClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const user = await getCurrentUser();
   if (!user) redirect("/sign-in");
 
   const orders = await getMyOrdersWithItems();

@@ -1,13 +1,12 @@
 import { redirect, notFound } from "next/navigation";
 import { signOut } from "@/actions/auth";
-import { createSupabaseServerClient } from "@/lib/supabase/auth-server";
+import { getCurrentUser } from "@/lib/supabase/auth-server";
 import { isCurrentUserAdmin } from "@/lib/admin";
 import { getRecentOrderCount } from "@/lib/data/admin-stats";
 import { AdminShell } from "@/components/organisms/AdminShell";
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
-  const supabase = await createSupabaseServerClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const user = await getCurrentUser();
   if (!user) redirect("/sign-in");
   if (!(await isCurrentUserAdmin())) notFound();
 

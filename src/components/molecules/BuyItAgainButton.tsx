@@ -1,20 +1,9 @@
 "use client";
 
-import { useActionState, useEffect, useState } from "react";
-import { addToCart, type AddToCartState } from "@/actions/cart";
-
-const initial: AddToCartState = { status: "idle" };
+import { useAddToCart } from "@/hooks/useAddToCart";
 
 export function BuyItAgainButton({ productId }: { productId: string }) {
-  const [state, formAction, pending] = useActionState(addToCart, initial);
-  const [justAdded, setJustAdded] = useState(false);
-
-  useEffect(() => {
-    if (state.status !== "added") return;
-    setJustAdded(true);
-    const timer = setTimeout(() => setJustAdded(false), 1800);
-    return () => clearTimeout(timer);
-  }, [state]);
+  const { formAction, pending, justAdded } = useAddToCart(productId, 1800);
 
   return (
     <form action={formAction}>
