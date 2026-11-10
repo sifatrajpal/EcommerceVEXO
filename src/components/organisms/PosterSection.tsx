@@ -6,13 +6,30 @@ import { AnimatedHeading } from "@/components/atoms/AnimatedHeading";
 import type { Theme } from "@/lib/data/settings";
 import { THEME_IMAGES } from "@/lib/theme-images";
 
+const DEFAULT_COPY = {
+  marqueeTop: "FRESH FOR YOUR NEXT WORKOUT FRESH FOR YOUR",
+  marqueeBottom: "YOUR NEXT WORKOUT YOUR NEXT WORKOUT",
+  kicker: "LEVEL UP",
+  heading: ["WITH THE LATEST IN", "WORKOUT WEAR"],
+};
+
+const COPY: Partial<Record<Theme, typeof DEFAULT_COPY>> = {
+  elanora: {
+    marqueeTop: "NEW SEASON NEW SEASON NEW SEASON NEW",
+    marqueeBottom: "TIMELESS STYLE TIMELESS STYLE TIMELESS",
+    kicker: "NEW ARRIVALS",
+    heading: ["ELEVATE YOUR", "EVERYDAY"],
+  },
+};
+
 /** Centered poster card with giant grey text sliding behind it. */
 export function PosterSection({ theme = "default" }: { theme?: Theme }) {
   const images = THEME_IMAGES[theme];
+  const copy = COPY[theme] ?? DEFAULT_COPY;
   return (
     <Panel data-scroll-section className="aspect-[935/555]">
-      <ScrollText text="FRESH FOR YOUR NEXT WORKOUT FRESH FOR YOUR" direction={-1} offset={-0.02} className="top-[16%] z-10 text-[10.2cqw] font-light text-ghost" />
-      <ScrollText text="YOUR NEXT WORKOUT YOUR NEXT WORKOUT" direction={1} offset={-0.12} className="top-[71%] z-10 text-[10.2cqw] font-light text-ghost" />
+      <ScrollText text={copy.marqueeTop} direction={-1} offset={-0.02} className="top-[16%] z-10 text-[10.2cqw] font-light text-ghost" />
+      <ScrollText text={copy.marqueeBottom} direction={1} offset={-0.12} className="top-[71%] z-10 text-[10.2cqw] font-light text-ghost" />
 
       <Link href="/shop" aria-label="Shop the collection" className="contents">
         <RevealImage
@@ -20,11 +37,12 @@ export function PosterSection({ theme = "default" }: { theme?: Theme }) {
           alt="Model from the current season line-up"
           sizes="35vw"
           className="absolute top-[8.5%] left-[32.6%] z-20 h-[78.6%] w-[34.3%] rounded-[1.9cqw]"
+          imgClassName="object-top"
         >
           <div className="absolute inset-0 pt-[4.8%] text-center text-white">
             <p className="text-[clamp(10px,1.5cqw,18px)] tracking-[0.06em]">VEXO</p>
-            <p className="mt-[1.2cqw] mb-[0.6cqw] text-[clamp(8px,0.62cqw,11px)]">LEVEL UP</p>
-            <AnimatedHeading onDark lines={["WITH THE LATEST IN", "WORKOUT WEAR"]} className="text-[2.6cqw] leading-[0.95] font-medium tracking-[-0.03em]" />
+            <p className="mt-[1.2cqw] mb-[0.6cqw] text-[clamp(8px,0.62cqw,11px)]">{copy.kicker}</p>
+            <AnimatedHeading onDark lines={copy.heading} className="text-[2.6cqw] leading-[0.95] font-medium tracking-[-0.03em]" />
           </div>
         </RevealImage>
       </Link>

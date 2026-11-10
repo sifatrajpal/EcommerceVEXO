@@ -14,7 +14,7 @@ type Props = {
   objectPosition?: string;
 };
 
-export function ProductCard({ product, delay = 0, className, imageClassName = "aspect-[203/279]", objectPosition }: Props) {
+export function ProductCard({ product, delay = 0, className, imageClassName = "aspect-[203/279]", objectPosition = "object-top" }: Props) {
   const isNew = product.isNewArrival && isRecentlyAdded(product.createdAt);
 
   return (

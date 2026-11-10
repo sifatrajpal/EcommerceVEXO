@@ -8,17 +8,32 @@ import { RevealImage } from "@/components/atoms/RevealImage";
 import type { Theme } from "@/lib/data/settings";
 import { THEME_IMAGES } from "@/lib/theme-images";
 
-const ROWS = [
+const DEFAULT_ROWS = [
   { text: "FOR YOUR NEXT WORKOUT FOR YOUR NEXT", direction: -1 as const, offset: -0.02, top: "top-[17.2%]" },
   { text: "YOUR NEXT WORKOUT YOUR NEXT WORKOUT", direction: 1 as const, offset: -0.12, top: "top-[72%]" },
 ];
 
-const LABELS = [
+const DEFAULT_LABELS = [
   { text: ["HOODIE & INNER", "SHORT THERMAL"], className: "left-[5%] top-[31%]" },
   { text: ["12/08/2024", "DELIVERY"], className: "right-[6%] top-[31%] text-right" },
   { text: ["FALL / WINTER", "2024"], className: "left-[6%] top-[79%] text-right" },
   { text: ["SHOCKS", "SHOE"], className: "right-[9%] top-[79%] text-ink before:absolute before:-left-[1cqw] before:top-[0.35cqw] before:size-[0.45cqw] before:rounded-full before:bg-ink" },
 ];
+
+const ELANORA_ROWS = [
+  { text: "TIMELESS STYLE TIMELESS STYLE TIMELESS", direction: -1 as const, offset: -0.02, top: "top-[17.2%]" },
+  { text: "MODERN ELEGANCE MODERN ELEGANCE MODERN", direction: 1 as const, offset: -0.12, top: "top-[72%]" },
+];
+
+const ELANORA_LABELS = [
+  { text: ["SILK BLOUSE &", "TAILORED TROUSER"], className: "left-[5%] top-[31%]" },
+  { text: ["12/08/2026", "DELIVERY"], className: "right-[6%] top-[31%] text-right" },
+  { text: ["FALL / WINTER", "2026"], className: "left-[6%] top-[79%] text-right" },
+  { text: ["HEELS", "SHOE"], className: "right-[9%] top-[79%] text-ink before:absolute before:-left-[1cqw] before:top-[0.35cqw] before:size-[0.45cqw] before:rounded-full before:bg-ink" },
+];
+
+const ROWS_BY_THEME: Partial<Record<Theme, typeof DEFAULT_ROWS>> = { elanora: ELANORA_ROWS };
+const LABELS_BY_THEME: Partial<Record<Theme, typeof DEFAULT_LABELS>> = { elanora: ELANORA_LABELS };
 
 /**
  * The giant text is drawn twice:
@@ -28,6 +43,8 @@ const LABELS = [
  */
 export function PosterFeature({ theme = "default" }: { theme?: Theme }) {
   const images = THEME_IMAGES[theme];
+  const ROWS = ROWS_BY_THEME[theme] ?? DEFAULT_ROWS;
+  const LABELS = LABELS_BY_THEME[theme] ?? DEFAULT_LABELS;
   const cardRef = useRef<HTMLDivElement>(null);
   const mirrorRef = useRef<HTMLDivElement>(null);
 
@@ -57,7 +74,13 @@ export function PosterFeature({ theme = "default" }: { theme?: Theme }) {
 
       <div ref={cardRef} className="absolute top-[10.9%] left-[32.9%] z-20 h-[75.2%] w-[34.2%] overflow-hidden rounded-[1.9cqw]">
         <Link href="/shop" aria-label="Shop the collection" className="contents">
-          <RevealImage src={images.featureAthlete} alt="Model from the current collection" sizes="35vw" className="absolute inset-0" />
+          <RevealImage
+            src={images.featureAthlete}
+            alt="Model from the current collection"
+            sizes="35vw"
+            className="absolute inset-0"
+            imgClassName="object-top"
+          />
         </Link>
 
         <div ref={mirrorRef} data-scroll-section aria-hidden className="pointer-events-none absolute z-10">

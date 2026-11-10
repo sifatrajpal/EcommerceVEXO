@@ -21,7 +21,14 @@ const DEFAULT_IMAGES: ThemeImages = {
 /** Which marketing photo fills each recurring slot, per theme. Product-grid photos stay data-driven. */
 export const THEME_IMAGES: Record<Theme, ThemeImages> = {
   default: DEFAULT_IMAGES,
-  elanora: DEFAULT_IMAGES,
+  elanora: {
+    hero: "/images/edit-look-2.png",
+    posterGroup: "/images/edit-look-4.png",
+    featureAthlete: "/images/arrival-9.png",
+    cutoutHood: "/images/arrival-10.png",
+    pickA: "/images/arrival-11.png",
+    pickB: "/images/arrival-12.png",
+  },
   noir: {
     hero: "/images/edit-hood.png",
     posterGroup: "/images/edit-shorts.png",

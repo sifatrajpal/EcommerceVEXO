@@ -10,6 +10,12 @@
   --color-ghost: #cfd2d6;
   --color-muted: #6b7078;
 
+  /* Accent pair — unused outside the Studio theme's own sections (curated-collections band,
+     promo cards). Declared here (not just under [data-theme="studio"]) so the token always
+     resolves to something, the same way every other color token does. */
+  --color-accent: #7b8c6c;
+  --color-accent-warm: #c8743f;
+
   /* Shape language — Panel/Button read these so a theme can change the site's
      silhouette (rounded cards vs. flat edge-to-edge sections), not just color. */
   --radius-panel: 22px;
@@ -68,12 +74,23 @@ html, body { background: var(--color-frame); color: var(--color-ink); }
 
 /* Mirrors a left/right grid (copy-then-images becomes images-then-copy, etc.) without
    touching the markup: reversing the container's direction reverses which physical
-   side each track renders on, then each child resets back to normal text flow. */
-[data-theme="elanora"] .mirror-grid {
+   side each track renders on, then each child resets back to normal text flow. Each
+   theme mirrors its own subset of sections, so no two themes rearrange the page the
+   same way — the base reset applies everywhere; only `direction: rtl` is theme-gated. */
+.mirror-grid-edit-main > *,
+.mirror-grid-edit-bottom > *,
+.mirror-grid-picks > *,
+.mirror-grid-arrivals > * {
+  direction: ltr;
+}
+[data-theme="elanora"] .mirror-grid-edit-main,
+[data-theme="elanora"] .mirror-grid-edit-bottom,
+[data-theme="elanora"] .mirror-grid-picks {
   direction: rtl;
 }
-[data-theme="elanora"] .mirror-grid > * {
-  direction: ltr;
+[data-theme="studio"] .mirror-grid-picks,
+[data-theme="studio"] .mirror-grid-arrivals {
+  direction: rtl;
 }
 
 /* Swap the angular notch + radiating lines for a soft circular arc behind the hero,
@@ -129,8 +146,25 @@ html, body { background: var(--color-frame); color: var(--color-ink); }
 }
 [data-theme="studio"] h1,
 [data-theme="studio"] h2,
-[data-theme="studio"] h3 {
+[data-theme="studio"] h3,
+[data-theme="studio"] .site-logo {
   font-family: var(--font-fraunces), Georgia, serif;
+}
+[data-theme="studio"] .site-logo {
+  letter-spacing: 0.01em;
+  font-weight: 400;
+}
+
+/* Drop the decorative notch and rays entirely — a plain, unornamented hero fits the
+   quieter editorial read better than either the default trapezoid or a shape swap. */
+[data-theme="studio"] .notch::before,
+[data-theme="studio"] .hero-lines {
+  display: none;
+}
+
+[data-theme="studio"] .mirror-grid-edit-main,
+[data-theme="studio"] .mirror-grid-edit-bottom {
+  direction: rtl;
 }
 
 /* ───────────── Admin console — always its own look ─────────────

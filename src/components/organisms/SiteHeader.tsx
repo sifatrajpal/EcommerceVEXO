@@ -22,7 +22,7 @@ export async function SiteHeader() {
         <NavLinks items={[...primaryNav, ...secondaryNav]} label="Primary" className="max-md:hidden" />
         <MenuButton items={[...primaryNav, ...secondaryNav]} className="md:hidden" />
       </div>
-      <Link href="/" className="col-start-2 -mt-[0.6cqw] text-[clamp(24px,3.2cqw,46px)] font-semibold tracking-[0.02em]">VEXO</Link>
+      <Link href="/" className="site-logo col-start-2 -mt-[0.6cqw] text-[clamp(24px,3.2cqw,46px)] font-semibold tracking-[0.02em]">VEXO</Link>
       <div className="flex items-center gap-[2.2cqw] justify-self-end">
         <div className="flex items-center gap-[0.2cqw]">
           {admin && (

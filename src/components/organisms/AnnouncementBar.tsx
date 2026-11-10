@@ -1,16 +1,23 @@
 import Link from "next/link";
-import { getActiveTheme } from "@/lib/data/settings";
+import { getActiveTheme, type Theme } from "@/lib/data/settings";
 
-/** Élanora-only top bar, echoing the reference design's topbar. Renders nothing on the Default theme. */
+const COPY: Partial<Record<Theme, [string, string]>> = {
+  elanora: ["Free Shipping on Orders Over $99", "Easy Returns within 30 Days"],
+  studio: ["Complimentary Shipping Over $99", "30-Day Easy Returns"],
+};
+
+/** Top bar for every theme except Default — each with its own copy. Renders nothing on Default. */
 export async function AnnouncementBar() {
   const theme = await getActiveTheme();
-  if (theme !== "elanora") return null;
+  const copy = COPY[theme];
+  if (!copy) return null;
+  const [left, right] = copy;
 
   return (
     <div className="flex items-center justify-between bg-panel px-4 py-2 text-[12px] text-ink sm:px-8">
       <div className="flex gap-4 max-sm:hidden">
-        <span>Free Shipping on Orders Over $99</span>
-        <span className="border-l border-ghost pl-4">Easy Returns within 30 Days</span>
+        <span>{left}</span>
+        <span className="border-l border-ghost pl-4">{right}</span>
       </div>
       <div className="flex gap-6 sm:ml-auto">
         <Link href="/account" className="hover:underline">Track Order</Link>

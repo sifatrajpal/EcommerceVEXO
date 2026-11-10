@@ -16,6 +16,31 @@ import type { EditTab } from "@/lib/types";
 import type { Theme } from "@/lib/data/settings";
 import { THEME_IMAGES } from "@/lib/theme-images";
 
+const DEFAULT_COPY = {
+  heading: ["BUILT FOR EVERY", "SEASON & REP"],
+  body: "Performance-driven gear for men and women, designed for summer heat and winter cold. Breathable layers, insulated shells and everyday essentials that move with you.",
+  cardHeading: ["COZY LAYERS,", "HEAT READY"],
+  cardBody: "Thermal hoods, face covers and caps that lock in warmth without the bulk.",
+  cardLink: "Explore layers",
+};
+
+const COPY: Partial<Record<Theme, typeof DEFAULT_COPY>> = {
+  elanora: {
+    heading: ["TIMELESS PIECES FOR", "EVERY OCCASION"],
+    body: "Elevated everyday essentials, designed to take you from your morning coffee run to your evening plans — without missing a beat.",
+    cardHeading: ["SOFT KNITS,", "ELEVATED"],
+    cardBody: "Lightweight knits and tailored layers that transition effortlessly from day to night.",
+    cardLink: "Explore knitwear",
+  },
+  studio: {
+    heading: ["CURATED ESSENTIALS FOR", "EVERY OCCASION"],
+    body: "Thoughtfully edited pieces that layer easily from a quiet morning to a city evening — cut from fabrics built to last.",
+    cardHeading: ["QUIET LUXURY,", "WARM TONES"],
+    cardBody: "Soft knits and tailored layers in a palette built around sage, terracotta and cream.",
+    cardLink: "Explore the edit",
+  },
+};
+
 /**
  * Tabs pipeline: click tab → setActive(i) → new imageA/imageB src
  * → RevealImage fades the old picture out, swaps it, then fades the new one in.
@@ -24,23 +49,22 @@ export function ShopTheEdit({ tabs, theme = "default" }: { tabs: EditTab[]; them
   const [active, setActive] = useState(0);
   const tab = tabs[active];
   const images = THEME_IMAGES[theme];
-  // The tuned crop below was picked for the default photos — a swapped-in theme photo gets a plain center crop instead.
-  const tunedCrop = theme === "default" || theme === "elanora";
+  const copy = COPY[theme] ?? DEFAULT_COPY;
+  // The tuned crop below was picked for the default photos; every other theme's swapped-in
+  // photo gets a top-anchored crop instead, so full-body shots don't get their faces cut off.
+  const tunedCrop = theme === "default";
 
   return (
     <Panel className="px-[3.4cqw] pt-[4.2cqw] pb-[3.4cqw]">
-      <div className="mirror-grid grid items-start gap-[4.5cqw] md:grid-cols-[34%_1fr] ">
+      <div className="mirror-grid-edit-main grid items-start gap-[4.5cqw] md:grid-cols-[34%_1fr] ">
         {/* Copy */}
         <div className="pt-[0.6cqw]">
           <Eyebrow className="mb-[1.6cqw] text-[#8e939a]">Collection</Eyebrow>
           <AnimatedHeading
-            lines={["BUILT FOR EVERY", "SEASON & REP"]}
+            lines={copy.heading}
             className="mb-[2cqw] text-[4.1cqw] leading-[0.95] font-medium tracking-[-0.04em]"
           />
-          <Text className="max-w-[28cqw] max-md:max-w-none">
-            Performance-driven gear for men and women, designed for summer heat and winter cold. Breathable layers,
-            insulated shells and everyday essentials that move with you.
-          </Text>
+          <Text className="max-w-[28cqw] max-md:max-w-none">{copy.body}</Text>
           <Button href="#new-arrivals" shape="square" className="mt-[3cqw]">SHOP THE EDIT</Button>
         </div>
 
@@ -72,17 +96,17 @@ export function ShopTheEdit({ tabs, theme = "default" }: { tabs: EditTab[]; them
       </div>
 
       {/* Bottom row */}
-      <div className="mirror-grid mt-[3cqw] grid gap-[2.8cqw] md:grid-cols-2">
+      <div className="mirror-grid-edit-bottom mt-[3cqw] grid gap-[2.8cqw] md:grid-cols-2">
         <article className="relative aspect-[1.8] overflow-hidden rounded-[1.8cqw] bg-[linear-gradient(135deg,#f6f6f4,#e2e4e6)] max-md:aspect-[1.4]">
           <div className="relative z-10 max-w-[55%] px-[3cqw] py-[3.2cqw]">
             <AnimatedHeading
               as="h3"
-              lines={["COZY LAYERS,", "HEAT READY"]}
+              lines={copy.cardHeading}
               className="mb-[1.3cqw] text-[2.4cqw] leading-[0.98] font-medium tracking-[-0.03em]"
             />
-            <Text>Thermal hoods, face covers and caps that lock in warmth without the bulk.</Text>
+            <Text>{copy.cardBody}</Text>
             <Link href="/shop?season=winter" className="group mt-[1.8cqw] inline-block border-b border-ink pb-0.5 text-[clamp(10px,0.88cqw,14px)]">
-              Explore layers <span className="inline-block transition-transform group-hover:translate-x-1">→</span>
+              {copy.cardLink} <span className="inline-block transition-transform group-hover:translate-x-1">→</span>
             </Link>
           </div>
           <Link
@@ -95,7 +119,7 @@ export function ShopTheEdit({ tabs, theme = "default" }: { tabs: EditTab[]; them
               alt="Model wearing the featured cozy layer"
               fill
               sizes="25vw"
-              className={tunedCrop ? "object-cover object-[65%_35%]" : "object-cover object-center"}
+              className={tunedCrop ? "object-cover object-[65%_35%]" : "object-cover object-top"}
             />
           </Link>
         </article>
@@ -107,7 +131,7 @@ export function ShopTheEdit({ tabs, theme = "default" }: { tabs: EditTab[]; them
             delay={0.12}
             sizes="(max-width: 768px) 100vw, 50vw"
             className="relative aspect-[1.8] rounded-[1.8cqw] max-md:aspect-[1.4]"
-            imgClassName={tunedCrop ? "object-[50%_22%]" : "object-center"}
+            imgClassName={tunedCrop ? "object-[50%_22%]" : "object-top"}
           >
             <Tag className="absolute top-[1.6cqw] left-[1.6cqw] text-[#141414]">LOOKBOOK 2026</Tag>
             <span

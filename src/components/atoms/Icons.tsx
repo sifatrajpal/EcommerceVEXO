@@ -147,3 +147,29 @@ export const ReceiptIcon = (p: SVGProps<SVGSVGElement>) => (
     <path d="M9 8h6M9 12h6" />
   </svg>
 );
+
+export const LeafIcon = (p: SVGProps<SVGSVGElement>) => (
+  <svg {...base} stroke="currentColor" {...p}>
+    <path d="M12 22V8M12 12c-3 0-5-2-5-5 3 0 5 2 5 5ZM12 12c3 0 5-2 5-5-3 0-5 2-5 5ZM12 17c-3 0-5-2-5-5 3 0 5 2 5 5ZM12 17c3 0 5-2 5-5-3 0-5 2-5 5Z" />
+  </svg>
+);
+export const ShieldCheckIcon = (p: SVGProps<SVGSVGElement>) => (
+  <svg {...base} stroke="currentColor" {...p}>
+    <path d="M12 3l8 4v6c0 4.5-3.5 7-8 8-4.5-1-8-3.5-8-8V7z" />
+    <path d="M9 12l2 2 4-4" />
+  </svg>
+);
+export const CardIcon = (p: SVGProps<SVGSVGElement>) => (
+  <svg {...base} stroke="currentColor" {...p}>
+    <rect x="3" y="5" width="18" height="14" rx="2" />
+    <path d="M3 10h18M7 15h4" />
+  </svg>
+);
+export const HeadsetIcon = (p: SVGProps<SVGSVGElement>) => (
+  <svg {...base} stroke="currentColor" {...p}>
+    <path d="M4 14v-2a8 8 0 0 1 16 0v2" />
+    <rect x="3" y="13" width="4" height="6" rx="1.5" />
+    <rect x="17" y="13" width="4" height="6" rx="1.5" />
+    <path d="M19 19c0 2-2 3-5 3" />
+  </svg>
+);

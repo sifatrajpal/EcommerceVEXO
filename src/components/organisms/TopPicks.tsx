@@ -7,22 +7,43 @@ import { RevealImage } from "@/components/atoms/RevealImage";
 import type { Theme } from "@/lib/data/settings";
 import { THEME_IMAGES } from "@/lib/theme-images";
 
+const DEFAULT_COPY = {
+  heading: ["TOP WORKOUT GEAR FOR", "PEAK PERFORMANCE!"],
+  intro: "Discover the best of our collection, designed to power your workouts all year round",
+  left: "Performance-driven gear for everyone — built for summer heat and winter cold.",
+  right: "Stay warm, stay fit. Our winter workout wear blends insulation with flexibility to keep you going in the toughest conditions.",
+};
+
+const COPY: Partial<Record<Theme, typeof DEFAULT_COPY>> = {
+  elanora: {
+    heading: ["EDITOR'S PICKS FOR", "YOUR WARDROBE"],
+    intro: "A curated edit of the season's most versatile pieces, chosen for the way they wear, not just the way they look",
+    left: "Timeless silhouettes cut from fabrics that hold their shape, season after season.",
+    right: "Soft layering pieces that move easily between a desk day and a dinner out.",
+  },
+  studio: {
+    heading: ["OUR FAVOURITE", "SILHOUETTES"],
+    intro: "A small edit of staff-favourite pieces, chosen for the way they layer — not just the way they photograph",
+    left: "Sage and cream tones built around a quiet, considered wardrobe.",
+    right: "Terracotta accents and tailored cuts for golden-hour evenings out.",
+  },
+};
+
 export function TopPicks({ theme = "default" }: { theme?: Theme }) {
   const images = THEME_IMAGES[theme];
+  const copy = COPY[theme] ?? DEFAULT_COPY;
   return (
     <Panel id="top-picks" className="px-[2.6cqw] pt-[1.4cqw] pb-[2.6cqw]">
       <Eyebrow>OUR TOP PICKS</Eyebrow>
       <div className="mt-[2.2cqw] mb-[2.8cqw] flex items-start justify-between gap-6">
         <AnimatedHeading
-          lines={["TOP WORKOUT GEAR FOR", "PEAK PERFORMANCE!"]}
+          lines={copy.heading}
           className="text-[3.9cqw] leading-[0.92] font-medium tracking-[-0.04em]"
         />
-        <Text className="mt-[1.5cqw] w-[17.5cqw] text-[clamp(9px,0.8cqw,13px)]">
-          Discover the best of our collection, designed to power your workouts all year round
-        </Text>
+        <Text className="mt-[1.5cqw] w-[17.5cqw] text-[clamp(9px,0.8cqw,13px)]">{copy.intro}</Text>
       </div>
 
-      <div className="mirror-grid grid grid-cols-1 items-start gap-[3.2cqw] md:grid-cols-[1fr_1.5fr_1fr]">
+      <div className="mirror-grid-picks grid grid-cols-1 items-start gap-[3.2cqw] md:grid-cols-[1fr_1.5fr_1fr]">
         <div className="flex flex-col gap-[1.2cqw] animate-float">
           <Link href="/shop" aria-label="Shop the collection" className="contents">
             <RevealImage
@@ -33,7 +54,7 @@ export function TopPicks({ theme = "default" }: { theme?: Theme }) {
               imgClassName="object-top"
             />
           </Link>
-          <Text>Performance-driven gear for everyone — built for summer heat and winter cold.</Text>
+          <Text>{copy.left}</Text>
         </div>
 
         <Link href="/shop" aria-label="Shop the collection" className="contents">
@@ -48,7 +69,7 @@ export function TopPicks({ theme = "default" }: { theme?: Theme }) {
         </Link>
 
         <div className="flex h-full flex-col gap-[1.2cqw] self-stretch animate-float [animation-delay:3s]">
-          <Text>Stay warm, stay fit. Our winter workout wear blends insulation with flexibility to keep you going in the toughest conditions.</Text>
+          <Text>{copy.right}</Text>
           <Link href="/shop" aria-label="Shop the collection" className="contents">
             <RevealImage
               src={images.pickB}

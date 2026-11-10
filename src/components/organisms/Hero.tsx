@@ -6,11 +6,39 @@ import { AnimatedHeading } from "@/components/atoms/AnimatedHeading";
 import { HeroNote } from "@/components/molecules/HeroNote";
 import { VideoCard } from "@/components/molecules/VideoCard";
 import { SiteHeader } from "./SiteHeader";
+import { HeroStudio } from "./HeroStudio";
 import type { Theme } from "@/lib/data/settings";
 import { THEME_IMAGES } from "@/lib/theme-images";
 
 // Line end points (in a 921×540 box) radiating from behind the model.
 const RAYS = [[120, 175], [60, 250], [20, 360], [150, 450], [790, 175], [870, 250], [910, 360], [780, 450]];
+
+const COPY: Record<Theme, { lines: Parameters<typeof AnimatedHeading>[0]["lines"]; shop: string; explore: string; note: string }> = {
+  default: {
+    lines: ["GEAR UP EVERY SEASON", [{ text: "EVERY " }, { text: "WORKOUT", tone: "stripe" }, { text: "!" }]],
+    shop: "SHOP NOW",
+    explore: "EXPLORE ALL",
+    note: "Stay cozy without compromising your range of motion. Our women's winter range is perfect for those chilly outdoor workouts.",
+  },
+  elanora: {
+    lines: ["TIMELESS STYLE.", [{ text: "MODERN ", tone: "stripe" }, { text: "ELEGANCE." }]],
+    shop: "SHOP NEW ARRIVALS",
+    explore: "EXPLORE COLLECTIONS",
+    note: "Elevated everyday pieces, designed to make you feel confident — from your morning coffee run to your evening plans.",
+  },
+  noir: {
+    lines: ["GEAR UP EVERY SEASON", [{ text: "EVERY " }, { text: "WORKOUT", tone: "stripe" }, { text: "!" }]],
+    shop: "SHOP NOW",
+    explore: "EXPLORE ALL",
+    note: "Stay cozy without compromising your range of motion. Our women's winter range is perfect for those chilly outdoor workouts.",
+  },
+  studio: {
+    lines: ["STYLE THAT MOVES", [{ text: "WITH ", }, { text: "YOU", tone: "stripe" }]],
+    shop: "SHOP THE EDIT",
+    explore: "DISCOVER MORE",
+    note: "Thoughtfully edited pieces in sage and terracotta, cut from fabrics built to layer easily from morning to evening.",
+  },
+};
 
 /**
  * Load sequence (CSS only, driven by animation-delay):
@@ -19,7 +47,12 @@ const RAYS = [[120, 175], [60, 250], [20, 360], [150, 450], [790, 175], [870, 25
  * buttons 2.7s → note 2.9s → video 3s
  */
 export function Hero({ theme = "default" }: { theme?: Theme }) {
+  // Studio gets its own split hero (VERDE-style side-tab ribbon + half-width photo)
+  // instead of the centered trapezoid-notch layout every other theme shares.
+  if (theme === "studio") return <HeroStudio />;
+
   const images = THEME_IMAGES[theme];
+  const copy = COPY[theme];
   return (
     <Panel background="bg-[image:var(--hero-gradient)]" className="notch aspect-[921/495] min-h-[520px]">
       <svg className="hero-lines absolute inset-0 h-full w-full" viewBox="0 0 921 540" preserveAspectRatio="none" aria-hidden>
@@ -32,14 +65,14 @@ export function Hero({ theme = "default" }: { theme?: Theme }) {
 
       <AnimatedHeading
         as="h1"
-        lines={["GEAR UP EVERY SEASON", [{ text: "EVERY " }, { text: "WORKOUT", tone: "stripe" }, { text: "!" }]]}
+        lines={copy.lines}
         className="relative z-20 mt-[5.2cqw] text-center text-[clamp(28px,5.1cqw,64px)] leading-[0.95] font-medium tracking-[-0.04em]"
         baseDelay={1.2}
       />
 
       <div className="relative z-20 mt-[2.2cqw] flex animate-up justify-center gap-[0.6cqw] [animation-delay:2.7s]">
-        <Button href="/shop">SHOP NOW</Button>
-        <Button href="/shop" variant="light">EXPLORE ALL</Button>
+        <Button href="/shop">{copy.shop}</Button>
+        <Button href="/shop" variant="light">{copy.explore}</Button>
       </div>
 
       <div className="relative z-10 mt-[1.6cqw] flex justify-center">
@@ -50,12 +83,12 @@ export function Hero({ theme = "default" }: { theme?: Theme }) {
             fill
             priority
             sizes="24vw"
-            className="origin-center object-cover animate-hero-zoom"
+            className="origin-top object-cover object-top animate-hero-zoom"
           />
         </Link>
       </div>
 
-      <HeroNote text="Stay cozy without compromising your range of motion. Our women's winter range is perfect for those chilly outdoor workouts." />
+      <HeroNote text={copy.note} />
       <VideoCard thumbnail="/images/video-thumb.png" />
     </Panel>
   );
